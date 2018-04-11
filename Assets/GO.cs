@@ -30,6 +30,8 @@ public class GO : MonoBehaviour {
   public GameObject booster;
   public GameObject megaBoost;
 
+  public Rigidbody currentTailTip;
+
   public Transform lockedObject;
   public Vector3 lockPos;
 
@@ -38,10 +40,13 @@ public class GO : MonoBehaviour {
   private float startDrag;
   private connectWithLine cwl;
 
+  public int tailsConnected = 0;
   public float lockStartTime;
 	// Use this for initialization
 	void Start () {
     rb= GetComponent<Rigidbody>();
+
+    currentTailTip = rb;
     onGround = false;
 
     startDrag = rb.drag;
@@ -150,7 +155,7 @@ public class GO : MonoBehaviour {
 
       float boooooooooost = Input.GetAxis("O");
 
-      print( boooooooooost);
+//      print( boooooooooost);
 
       if( boostAmount <= 0 ){
         boooooooooost = 0;

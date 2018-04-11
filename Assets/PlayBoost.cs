@@ -22,9 +22,9 @@ public class PlayBoost : MonoBehaviour {
 		float v = Random.Range(0,.99f);
 
     print(b.amount * .009f);
-    if( v < b.amount * .01f ){
+    if( v < b.amount * .005f ){
       print("d");
-     a.Play(c, v*.3f,  .2f+ v * .3f);
+     a.Play(c, v*.3f,  .8f+ v * .3f);
       }
 
 	}

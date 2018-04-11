@@ -126,7 +126,6 @@ GameObject:
   - component: {fileID: 115322490}
   - component: {fileID: 115322495}
   - component: {fileID: 115322494}
-  - component: {fileID: 115322496}
   m_Layer: 0
   m_Name: Sphere (8)
   m_TagString: Untagged
@@ -206,7 +205,7 @@ LineRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 115322489}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -302,21 +301,6 @@ MonoBehaviour:
   target: {fileID: 0}
   clip: {fileID: 8300000, guid: c3f452ccb261f4794a7095983ad9d786, type: 3}
   a: {fileID: 869483134}
---- !u!54 &115322496
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 115322489}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &146586414
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,13 +349,13 @@ Terrain:
   m_HeightmapMaximumLOD: 0
   m_CastShadows: 1
   m_DrawHeightmap: 1
-  m_DrawTreesAndFoliage: 1
+  m_DrawTreesAndFoliage: 0
   m_ReflectionProbeUsage: 1
   m_MaterialType: 3
   m_LegacySpecular:
     serializedVersion: 2
     rgba: 4286545791
-  m_LegacyShininess: 0.078125
+  m_LegacyShininess: 0.03
   m_MaterialTemplate: {fileID: 2100000, guid: eb97e7a92b7cf458386a3182057e6e6a, type: 2}
   m_BakeLightProbesForTrees: 1
   m_ScaleInLightmap: 0.0512
@@ -7948,7 +7932,6 @@ GameObject:
   - component: {fileID: 670311585}
   - component: {fileID: 670311589}
   - component: {fileID: 670311583}
-  - component: {fileID: 670311584}
   m_Layer: 0
   m_Name: Sphere (4)
   m_TagString: Untagged
@@ -7962,7 +7945,7 @@ LineRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 670311582}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -8044,21 +8027,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!54 &670311584
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 670311582}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!23 &670311585
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8119,7 +8087,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 670311582}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 50.353, z: 160.64}
+  m_LocalPosition: {x: 29.5, y: 33.8, z: -62.17}
   m_LocalScale: {x: 32.841965, y: 32.84194, z: 32.84194}
   m_Children: []
   m_Father: {fileID: 1540348276}
@@ -8338,7 +8306,6 @@ GameObject:
   - component: {fileID: 707114577}
   - component: {fileID: 707114582}
   - component: {fileID: 707114581}
-  - component: {fileID: 707114583}
   m_Layer: 0
   m_Name: Sphere (9)
   m_TagString: Untagged
@@ -8418,7 +8385,7 @@ LineRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 707114576}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -8514,21 +8481,6 @@ MonoBehaviour:
   target: {fileID: 0}
   clip: {fileID: 8300000, guid: c3f452ccb261f4794a7095983ad9d786, type: 3}
   a: {fileID: 869483134}
---- !u!54 &707114583
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 707114576}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &721725952
 GameObject:
   m_ObjectHideFlags: 0
@@ -12437,7 +12389,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 869483125}
   serializedVersion: 2
-  m_Mass: 5
+  m_Mass: 30
   m_Drag: 0.5
   m_AngularDrag: 1
   m_UseGravity: 1
@@ -12470,9 +12422,11 @@ MonoBehaviour:
   body: {fileID: 1151314925}
   booster: {fileID: 1421615747}
   megaBoost: {fileID: 350653560}
+  currentTailTip: {fileID: 0}
   lockedObject: {fileID: 0}
   lockPos: {x: 0, y: 0, z: 0}
   cameraHolder: {fileID: 390687140}
+  tailsConnected: 0
   lockStartTime: 0
 --- !u!114 &869483133
 MonoBehaviour:
@@ -12499,7 +12453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7aaba2680ecc4f41bfe003fc35d7f1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bufferSize: 20
+  bufferSize: 40
 --- !u!1 &890272789
 GameObject:
   m_ObjectHideFlags: 0
@@ -16637,7 +16591,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: -862801150
+  randomSeed: 982018030
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -23874,7 +23828,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: -915879127
+  randomSeed: -1858024432
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -27321,7 +27275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   a: {fileID: 869483134}
   b: {fileID: 0}
-  c: {fileID: 8300000, guid: 065448736d7474037baa3d899e62d98b, type: 3}
+  c: {fileID: 8300000, guid: de5b8109137fc4576952a82e3932aea2, type: 3}
 --- !u!1 &1507228716
 GameObject:
   m_ObjectHideFlags: 0
@@ -27335,7 +27289,6 @@ GameObject:
   - component: {fileID: 1507228717}
   - component: {fileID: 1507228722}
   - component: {fileID: 1507228721}
-  - component: {fileID: 1507228723}
   m_Layer: 0
   m_Name: Sphere (6)
   m_TagString: Untagged
@@ -27415,7 +27368,7 @@ LineRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1507228716}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -27511,21 +27464,6 @@ MonoBehaviour:
   target: {fileID: 0}
   clip: {fileID: 8300000, guid: c3f452ccb261f4794a7095983ad9d786, type: 3}
   a: {fileID: 869483134}
---- !u!54 &1507228723
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1507228716}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &1540348275
 GameObject:
   m_ObjectHideFlags: 0
@@ -27677,7 +27615,6 @@ GameObject:
   - component: {fileID: 1581696625}
   - component: {fileID: 1581696630}
   - component: {fileID: 1581696629}
-  - component: {fileID: 1581696631}
   m_Layer: 0
   m_Name: Sphere (5)
   m_TagString: Untagged
@@ -27757,7 +27694,7 @@ LineRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1581696624}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -27853,21 +27790,6 @@ MonoBehaviour:
   target: {fileID: 0}
   clip: {fileID: 8300000, guid: c3f452ccb261f4794a7095983ad9d786, type: 3}
   a: {fileID: 869483134}
---- !u!54 &1581696631
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1581696624}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &1652156350
 GameObject:
   m_ObjectHideFlags: 0
@@ -28326,7 +28248,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: -2082903874
+  randomSeed: 1701236835
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -31934,7 +31856,6 @@ GameObject:
   - component: {fileID: 1872620117}
   - component: {fileID: 1872620122}
   - component: {fileID: 1872620121}
-  - component: {fileID: 1872620123}
   m_Layer: 0
   m_Name: Sphere (7)
   m_TagString: Untagged
@@ -32014,7 +31935,7 @@ LineRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1872620116}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -32110,21 +32031,6 @@ MonoBehaviour:
   target: {fileID: 0}
   clip: {fileID: 8300000, guid: c3f452ccb261f4794a7095983ad9d786, type: 3}
   a: {fileID: 869483134}
---- !u!54 &1872620123
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1872620116}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &1954742647
 GameObject:
   m_ObjectHideFlags: 0
@@ -32352,7 +32258,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: 1770480661
+  randomSeed: -221138797
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -36162,7 +36068,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: -1220424833
+  randomSeed: -1251667201
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -39690,8 +39596,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2093134841}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.00000013795, y: -1.46, z: -0.000000019615}
-  m_LocalScale: {x: 0.07424293, y: 2.8500702, z: 0.2672513}
+  m_LocalPosition: {x: -0.00000013795, y: -3.08, z: -0.000000019615}
+  m_LocalScale: {x: 0.07424293, y: 5.422281, z: 0.2672513}
   m_Children: []
   m_Father: {fileID: 869483130}
   m_RootOrder: 5
@@ -39863,7 +39769,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: 912112028
+  randomSeed: 63473529
   InitialModule:
     serializedVersion: 3
     enabled: 1

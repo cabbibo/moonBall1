@@ -179,7 +179,7 @@ Shader "Custom/VolumeCombo" {
         float2 uv = i.uv;
 
         float3 d = ro * .01;
-        nor += .3*float3(-triNoise3D(d ,1,1),0,-triNoise3D(d+1000 ,1,1));
+        nor += .6*float3(-triNoise3D(d ,1,1),0,-triNoise3D(d+1000 ,1,1));
         nor = normalize(nor);
 
         // Our color starts off at zero,   
@@ -204,7 +204,7 @@ Shader "Custom/VolumeCombo" {
 					float val = getFogVal( p );	
 
 
-          if( val > .2){
+          if( val > .1){
 
 
 
@@ -214,7 +214,7 @@ Shader "Custom/VolumeCombo" {
     
               float delta = clamp((val2 - val) / (.5*offset),0,1);
             hit = 1;
-            col +=hsv( delta * _HueSize + .5 + length( d) * .01, 1, .5)* ( 1 - float(i)/_NumberSteps);
+            col +=hsv( delta *.3 + .5 + v * .2, .8, 1) * ( 1 - float(i)/_NumberSteps);
           break;
         }
 
@@ -228,19 +228,29 @@ Shader "Custom/VolumeCombo" {
 
         //col = float3(0,0,0);
 
-        float d1 = (100/length(ro - _Light1)*1);//max(-dot( nor , reflect( rd , normalize(ro - _Light1))),0);
-        float d2 = (100/length(ro - _Light2)*1);//max(-dot( nor , reflect( rd , normalize(ro - _Light2))),0);
-        float d3 = (100/length(ro - _Light3)*1);//max(-dot( nor , reflect( rd , normalize(ro - _Light3))),0);
-        float d4 = (100/length(ro - _Light4)*1);//max(-dot( nor , reflect( rd , normalize(ro - _Light4))),0);
-        float d5 = (100/length(ro - _Light5)*1);//max(-dot( nor , reflect( rd , normalize(ro - _Light5))),0);
-        float d6 = (100/length(ro - _Light6)*1);//max(-dot( nor , reflect( rd , normalize(ro - _Light6))),0);
+        float d1 = (100/length(ro - _Light1)*1);float m1=max(dot( -nor , normalize(ro - _Light1)),0);
+        float d2 = (100/length(ro - _Light2)*1);float m2=max(dot( -nor , normalize(ro - _Light2)),0);
+        float d3 = (100/length(ro - _Light3)*1);float m3=max(dot( -nor , normalize(ro - _Light3)),0);
+        float d4 = (100/length(ro - _Light4)*1);float m4=max(dot( -nor , normalize(ro - _Light4)),0);
+        float d5 = (100/length(ro - _Light5)*1);float m5=max(dot( -nor , normalize(ro - _Light5)),0);
+        float d6 = (100/length(ro - _Light6)*1);float m6=max(dot( -nor , normalize(ro - _Light6)),0);
 
-        col += hsv(pow(d1,1)* .3+.2,10,.001*pow(d1,10)); 
-        col += hsv(pow(d2,1)* .3+.5,10,.001*pow(d2,10)); 
-        col += hsv(pow(d3,1)* .3+.7,10,.001*pow(d3,10)); 
-        col += hsv(pow(d4,1)* .3+.9,10,.001*pow(d4,10)); 
-        col += hsv(pow(d5,1)* .3+.4,10,.001*pow(d5,10)); 
-        col += hsv(pow(d6,1)* .3+.0,10,.001*pow(d6,10)); 
+        col =lerp( col, hsv(pow(d1,1)* .01+.2,.6,1),.06*pow(d1,1)); 
+        col =lerp( col, hsv(pow(d2,1)* .01+.0,.6,1),.06*pow(d2,1)); 
+        col =lerp( col, hsv(pow(d3,1)* .01+.4,.6,1),.06*pow(d3,1)); 
+        col =lerp( col, hsv(pow(d4,1)* .01+.6,.6,1),.06*pow(d4,1)); 
+        col =lerp( col, hsv(pow(d5,1)* .01+.8,.6,1),.06*pow(d5,1)); 
+        col =lerp( col, hsv(pow(d6,1)* .01+.5,.6,1),.06*pow(d6,1)); 
+
+      //  col = float3(0,0,0);
+        col += 10/length(ro - _Light1)* hsv( 0,1,m1);
+        col += 10/length(ro - _Light2)* hsv( .2,1,m2);
+        col += 10/length(ro - _Light3)* hsv( .3,1,m3);
+        col += 10/length(ro - _Light4)* hsv( .5,1,m4);
+        col += 10/length(ro - _Light5)* hsv( .6,1,m5);
+        col += 10/length(ro - _Light6)* hsv( .8,1,m6);
+
+        col = nor * .5 + .5;
         //col +=hsv(d2*d2 * .2+.2,1,d2*d2); 
         //col +=hsv(d3*d3 * .2+.7,1,d3*d3); 
 
