@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Terrain 1
   m_Shader: {fileID: 4800000, guid: 4664302fd59f647c2a77db3288b41ac7, type: 3}
@@ -62,13 +62,13 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HueSize: 1
+    - _HueSize: 0
     - _Metallic: 0
     - _Mode: 0
     - _NumberSteps: 10
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PatternSize: 10
+    - _PatternSize: 3
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

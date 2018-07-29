@@ -11,7 +11,15 @@ public class GO : MonoBehaviour {
 
   public float boostAmount;
 
-  public float _MULT;
+  public float _BoostMULT;
+  public float _LerpSpeed;
+  public float _RotMULT;
+  public float _JumpMULT;
+  public float _AirRotMULT;
+  public float _AirBoostMULT;
+  public float _LockMULT;
+
+  public float dragBaseAmount;
 
   public Terrain terrain;
   private Rigidbody rb;
@@ -27,10 +35,12 @@ public class GO : MonoBehaviour {
   public GameObject front;
   public GameObject back;
   public GameObject body;
-  public GameObject booster;
-  public GameObject megaBoost;
+  public GameObject boosterR;
+  public GameObject boosterL;
+  public GameObject megaBoostL;
+  public GameObject megaBoostR;
 
-  public Rigidbody currentTailTip;
+  public Transform currentTailTip;
 
   public Transform lockedObject;
   public Vector3 lockPos;
@@ -44,9 +54,9 @@ public class GO : MonoBehaviour {
   public float lockStartTime;
 	// Use this for initialization
 	void Start () {
-    rb= GetComponent<Rigidbody>();
+    rb = GetComponent<Rigidbody>();
 
-    currentTailTip = rb;
+    currentTailTip = body.transform;//back.transform;
     onGround = false;
 
     startDrag = rb.drag;
@@ -57,7 +67,7 @@ public class GO : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-    cam.fov = Mathf.Lerp( cam.fov , 60 + Mathf.Clamp( rb.velocity.magnitude , 0 , 60), .1f );
+    cam.fieldOfView = Mathf.Lerp( cam.fieldOfView , 60 + Mathf.Clamp( rb.velocity.magnitude , 0 , 60), .1f );
 
    if( Input.GetAxis("[]") == 0 ){
      lockedObject = null;
@@ -93,9 +103,11 @@ public class GO : MonoBehaviour {
       Vector3 delta = lockedObject.position - lockPos;
 
       float timeLocked = Time.time - lockStartTime;
-      timeLocked *= 1;
+      timeLocked *= 3;
       timeLocked = Mathf.Clamp( timeLocked , 0, 1);
-      rb.AddForceAtPosition( -delta *30* _MULT * timeLocked ,lockedObject.position);
+     // rb.AddForceAtPosition( -delta *30* _MULT * timeLocked ,lockedObject.position);
+    //  rb.
+      rb.AddForceAtPosition(  -delta.normalized*1000* _LockMULT * timeLocked ,lockedObject.position + delta * .5f );
 
 
       hookPoint.transform.position = lockPos;
@@ -112,44 +124,44 @@ public class GO : MonoBehaviour {
 
     if( onGround == true ){
 
-      float h = terrain.SampleHeight(transform.position);
 
-      float eps = .01f;
-
-
-      Vector3 left = transform.position + Vector3.left * eps;
-      Vector3 right = transform.position - Vector3.left * eps;
-
-      Vector3 up = transform.position + Vector3.forward * eps;
-      Vector3 down = transform.position - Vector3.forward * eps;
-
-      float hL = terrain.SampleHeight(left);
-      float hR = terrain.SampleHeight(right);
-
-      float hU = terrain.SampleHeight(up);
-      float hD = terrain.SampleHeight(down);
-
-      left  = new Vector3( left.x   , hL , left.z   );
-      right = new Vector3( right.x  , hR , right.z  );
-      up    = new Vector3( up.x     , hU , up.z     );
-      down  = new Vector3( down.x   , hD , down.z   );
-
-      Vector3 nor = Vector3.Cross( (left-right).normalized,(up-down).normalized );
+     RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
+        {
+          
 
 
-     // rb.velocity = Vector3.Lerp( rb.velocity , transform.forward , .1f);
+        float dif =  hit.distance;
 
-      float dif =  transform.position.y-h;
+        Vector3 tangent = Vector3.Cross( transform.forward , rb.velocity ).normalized;
+        Vector3 groundForward = Vector3.Cross( tangent , hit.normal ).normalized;
 
 
-      // jump
-      rb.AddForce( 800 * Vector3.up * Input.GetAxis("X"));
+      //Vector3 velForward = -groundForward.normalized * rb.velocity.magnitude;
+      Vector3 velForward = -transform.forward * rb.velocity.magnitude;
+      float z = rb.velocity.z;
+      float x = rb.velocity.x;
+      float y = rb.velocity.y;
+     
+      x = Mathf.Lerp( x , velForward.x , _LerpSpeed );
+      z = Mathf.Lerp( z , velForward.z , _LerpSpeed );
+      rb.velocity = new Vector3( x , y,z);// = Vector3.Lerp( z , velForward  , .1f);
 
-      rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * (300)* _MULT);
 
-      rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 40* _MULT);
-      rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 400* _MULT);
+        // jump
+        rb.AddForce( 800 * Vector3.up * Input.GetAxis("X") * _JumpMULT);
 
+        rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * (300)* _RotMULT);
+
+        rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 40* _RotMULT);
+        rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 400* _RotMULT);
+
+
+
+        }
+     
+ 
 
 
 
@@ -159,27 +171,32 @@ public class GO : MonoBehaviour {
 
       if( boostAmount <= 0 ){
         boooooooooost = 0;
+         megaBoostL.GetComponent<Booster>().amount =0;
+         megaBoostR.GetComponent<Booster>().amount =0;
       }else{
 
         if( boooooooooost > 0.001f){
           boostAmount -= .01f;
 
-          megaBoost.GetComponent<Booster>().amount = boooooooooost;
+          megaBoostL.GetComponent<Booster>().amount = boooooooooost;
+          megaBoostR.GetComponent<Booster>().amount = boooooooooost;
 
+        }else{
+          megaBoostL.GetComponent<Booster>().amount =0;
+          megaBoostR.GetComponent<Booster>().amount =0;
         }
       }
 
-      Vector3 final = 100  * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward * _MULT * ( 1 + 3 * boooooooooost);
+      Vector3 final = 100  * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward * _BoostMULT * ( 1 + 3 * boooooooooost);
 		  rb.AddForce(final);
 
-      booster.GetComponent<Booster>().amount = final.magnitude;
+      boosterL.GetComponent<Booster>().amount = final.magnitude;
+      boosterR.GetComponent<Booster>().amount = final.magnitude;
 
 
 
-      Vector3 velForward = -transform.forward.normalized * rb.velocity.magnitude;
-      rb.velocity = Vector3.Lerp( rb.velocity , velForward  , .1f);
 
-      rb.drag = 1- Mathf.Abs(Vector3.Dot( rb.velocity.normalized , -transform.forward.normalized)) + .05f; 
+      rb.drag = 1 - Mathf.Abs(Vector3.Dot( rb.velocity.normalized , -transform.forward.normalized)) + dragBaseAmount; 
 
 
     }else{
@@ -188,26 +205,42 @@ public class GO : MonoBehaviour {
 
       float boooooooooost = Input.GetAxis("O");
 
+//      print( boooooooooost);
+
       if( boostAmount <= 0 ){
         boooooooooost = 0;
+         megaBoostL.GetComponent<Booster>().amount =0;
+         megaBoostR.GetComponent<Booster>().amount =0;
       }else{
 
         if( boooooooooost > 0.001f){
-        boostAmount -= .01f;
+          boostAmount -= .01f;
+
+          megaBoostL.GetComponent<Booster>().amount = boooooooooost;
+          megaBoostR.GetComponent<Booster>().amount = boooooooooost;
+
+        }else{
+          megaBoostL.GetComponent<Booster>().amount =0;
+          megaBoostR.GetComponent<Booster>().amount =0;
+        }
       }
-      }
 
 
-    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _MULT);
-    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _MULT);
 
-    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _MULT);
-    Vector3 final =100 * _MULT  * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward;
+
+    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _AirRotMULT);
+    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _AirRotMULT);
+
+    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _AirRotMULT);
+    Vector3 final =100 * _AirBoostMULT * ( 1 + 3 * boooooooooost) * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward;
     rb.AddForce(final);
 
 
 
-      booster.GetComponent<Booster>().amount = final.magnitude;
+      
+      boosterL.GetComponent<Booster>().amount = final.magnitude;
+      boosterR.GetComponent<Booster>().amount = final.magnitude;
+
 
     }
 
@@ -266,7 +299,7 @@ public class GO : MonoBehaviour {
         //lockPos =   front.transform.position + p - transform.right * Input.GetAxis("LeftStickX") * 100;
 
         float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
+       // lockPos = new Vector3( lockPos.x , h , lockPos.z );
 
       }else if(Input.GetAxis("LeftStickX")  > .05f ){
 
@@ -278,18 +311,29 @@ public class GO : MonoBehaviour {
        // lockPos = front.transform.position+ p - transform.right * Input.GetAxis("LeftStickX") * 100;
 
         float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        //lockPos = new Vector3( lockPos.x , h , lockPos.z );
 
 
       }else{
 
+
+          print(Input.GetAxis("LeftStickY") ); 
+
+        if(Input.GetAxis("LeftStickY")  <= 0 ){
+          print(Input.GetAxis("LeftStickY") );
+
         lockedObject = front.transform;
         lockPos = front.transform.position + p * 4 - transform.right * Input.GetAxis("LeftStickX") * 100;;
         float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
-
-
+        //lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        }else{
+           lockedObject = back.transform;
+        lockPos = back.transform.position + p * 4 - transform.right * Input.GetAxis("LeftStickX") * 100;;
+        float h = terrain.SampleHeight( lockPos );
+        //lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        }
       }
+      lockedObject = body.transform;
 
   }
 

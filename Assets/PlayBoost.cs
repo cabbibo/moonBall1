@@ -9,6 +9,7 @@ public class PlayBoost : MonoBehaviour {
   public ShipAudio a;
   public Booster b;
   public AudioClip c;
+  public float soundChance;
 
 	// Use this for initialization
 	void Start () {
@@ -21,10 +22,9 @@ public class PlayBoost : MonoBehaviour {
 	void Update () {
 		float v = Random.Range(0,.99f);
 
-    print(b.amount * .009f);
-    if( v < b.amount * .005f ){
-      print("d");
-     a.Play(c, v*.3f,  .8f+ v * .3f);
+    if( v < b.amount * .001f * soundChance ){
+      //print("d");
+     a.Play(c, 10.2f,  .8f);
       }
 
 	}

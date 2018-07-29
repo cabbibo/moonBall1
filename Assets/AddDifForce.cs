@@ -29,7 +29,38 @@ public class AddDifForce : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-       float h = terrain.SampleHeight(transform.position);
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
+        {
+
+
+        float dif =  hit.distance;
+
+        float newDif = (dif-baseVal);
+
+        if( newDif < maxHeight ){
+
+          float forceVal= overallMult * multiplier/ Mathf.Pow( newDif , 1f);
+        //  ps.Emit( (int)(forceVal*.01f));
+
+          Vector3 f = forceVal * hit.normal;
+
+          if( f.magnitude > maxForce ){
+            f = f.normalized * maxForce;
+          }
+
+          float velAdder =.7f;// Mathf.Clamp( .04f * parent.velocity.magnitude , 0, 1);
+          parent.AddForceAtPosition( f , transform.position );
+          //GetComponent<Rigidbody>().AddForce( f  );
+        }
+      
+
+
+
+        }
+
+/*       float h = terrain.SampleHeight(transform.position);
 
       float eps = .01f;
 
@@ -72,14 +103,14 @@ public class AddDifForce : MonoBehaviour {
         parent.AddForceAtPosition( f * (.3f + velAdder) , transform.position );
         //GetComponent<Rigidbody>().AddForce( f  );
       }
-		
+		*/
+
 	}
 
 
   public void EmitParticles(float collisionStrength){
 
-    ps.Emit((int)(10 * collisionStrength));
-
+    //ps.Emit((int)(10 * collisionStrength));
 
     audio.Play( clip ,collisionStrength* .1f, collisionStrength);
   }

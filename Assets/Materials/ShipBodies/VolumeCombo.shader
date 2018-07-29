@@ -102,7 +102,7 @@ Shader "Custom/VolumeCombo" {
 				for( float i = 0.; i <= 3.; i++ ){
 			   
 			    float3 dg = tri3( bp * 2. );
-			    p += ( dg );
+			    p += ( dg ) +time*.01;
 
 			    bp *= 1.8;
 					z  *= 1.5;
@@ -121,19 +121,28 @@ Shader "Custom/VolumeCombo" {
       float getFogVal( float3 pos ){
 
         float dist = .02*length(pos - _ShipPosition);
-        pos *= .02;
+        //pos *= .02;
 
       	float patternVal = sin( length( pos )  * _PatternSize );
-      	float noiseVal = triNoise3D( pos , 1000 , _Time.y );
+      	float noiseVal =10*triNoise3D( pos * _PatternSize *.02, 10 , _Time.y );
 
-        float r = dist-.001;
+        float r = dist;//-.01;
 
         if( r < 0){
           noiseVal = 0;
-          }else{
-        noiseVal -= .04/ (4*r*r);
+        }else{
+        noiseVal -= .2/ (4*r*r);
       }
-      	return noiseVal;
+
+      /*dist = .02*length(pos - _Light1);
+      r = dist;//-.01;
+
+        if( r < 0){
+          noiseVal = 0;
+        }else{
+        noiseVal -= .2/ (4*r*r);
+      }*/
+      	return r + noiseVal * .1;//noiseVal;
       }
       
       VertexOut vert(VertexIn v) {
@@ -168,22 +177,24 @@ Shader "Custom/VolumeCombo" {
       }
 
       // Fragment Shader
-      fixed4 frag(VertexOut i) : COLOR {
+      fixed4 frag(VertexOut v) : COLOR {
 
 				// Ray origin 
-        float3 ro 			= i.ro;
+        float3 ro 			= v.ro;
 
         // Ray direction
-        float3 rd 			= i.rd;      
-        float3 nor = i.normal; 
-        float2 uv = i.uv;
+        float3 rd 			= v.rd;      
+        float3 nor = v.normal; 
+        float2 uv = v.uv;
 
         float3 d = ro * .01;
-        nor += .6*float3(-triNoise3D(d ,1,1),0,-triNoise3D(d+1000 ,1,1));
+        nor += .6*float3(-triNoise3D(d *3,1,1),0,-triNoise3D(d*3+1000 ,1,1));
         nor = normalize(nor);
 
         // Our color starts off at zero,   
         float3 col = float3( 0.0 , 0.0 , 0.0 );
+
+        float3 refl = reflect(ro - _WorldSpaceCameraPos, nor );
 
 
 
@@ -204,7 +215,7 @@ Shader "Custom/VolumeCombo" {
 					float val = getFogVal( p );	
 
 
-          if( val > .1){
+          if( val > -.2){
 
 
 
@@ -214,7 +225,7 @@ Shader "Custom/VolumeCombo" {
     
               float delta = clamp((val2 - val) / (.5*offset),0,1);
             hit = 1;
-            col +=hsv( delta *.3 + .5 + v * .2, .8, 1) * ( 1 - float(i)/_NumberSteps);
+            col +=hsv( clamp((val+.2) * 1,0,1) * _HueSize + _Time.y * .2 + v * .2, val, 1-val) * ( 1 - float(i)/_NumberSteps);
           break;
         }
 
@@ -228,7 +239,7 @@ Shader "Custom/VolumeCombo" {
 
         //col = float3(0,0,0);
 
-        float d1 = (100/length(ro - _Light1)*1);float m1=max(dot( -nor , normalize(ro - _Light1)),0);
+       /* float d1 = (100/length(ro - _Light1)*1);float m1=max(dot( -nor , normalize(ro - _Light1)),0);
         float d2 = (100/length(ro - _Light2)*1);float m2=max(dot( -nor , normalize(ro - _Light2)),0);
         float d3 = (100/length(ro - _Light3)*1);float m3=max(dot( -nor , normalize(ro - _Light3)),0);
         float d4 = (100/length(ro - _Light4)*1);float m4=max(dot( -nor , normalize(ro - _Light4)),0);
@@ -248,9 +259,11 @@ Shader "Custom/VolumeCombo" {
         col += 10/length(ro - _Light3)* hsv( .3,1,m3);
         col += 10/length(ro - _Light4)* hsv( .5,1,m4);
         col += 10/length(ro - _Light5)* hsv( .6,1,m5);
-        col += 10/length(ro - _Light6)* hsv( .8,1,m6);
+        col += 10/length(ro - _Light6)* hsv( .8,1,m6);*/
 
-        col = nor * .5 + .5;
+        float bCol = triNoise3D(ro*.001 * dot(nor,float3(0,1,0)),1,_Time.y);
+        col = lerp( length(col) * .3 , bCol, saturate(.04f*length(_ShipPosition - ro)* length(bCol)*10-1));
+        col /= max(.005f*length(_ShipPosition - ro),1);
         //col +=hsv(d2*d2 * .2+.2,1,d2*d2); 
         //col +=hsv(d3*d3 * .2+.7,1,d3*d3); 
 

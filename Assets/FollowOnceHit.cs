@@ -5,9 +5,11 @@ using UnityEngine;
 public class FollowOnceHit : MonoBehaviour {
 
 
-public Rigidbody target;
+public Transform target;
 public AudioClip clip;
 public ShipAudio a;
+
+public float id; 
 
 
 private Rigidbody rb;
@@ -20,13 +22,13 @@ private int ID;
 	// Use this for initialization
 	void Start () {
 
-    //rb = GetComponent<Rigidbody>();
+    rb = GetComponent<Rigidbody>();
 		lr = GetComponent<LineRenderer>();
   // sj = GetComponent<SpringJoint>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
     if( target != null){
 
@@ -36,24 +38,38 @@ private int ID;
       lr.SetPosition( 0 , transform.position);
       lr.SetPosition( 1 , target.position);
 
-      transform.position = target.position + target.gameObject.transform.up * 1 +  target.gameObject.transform.right * 1 + target.gameObject.transform.forward * 1 * (1+(float)ID);
+      //rb.AddForce( -(transform.position - target.position)*20 );
+
+      Vector3 fPos = target.position +  target.forward * 1 * (2+(float)ID);
+      ///transform.position = Vector3.Lerp(transform.position , fPos,.5f);//
+      transform.position = Vector3.Lerp(transform.position, target.position,.1f);//
+
 
     }
 		
 	}
 
-  void OnCollisionEnter(Collision c){
+  void OnTriggerEnter(Collider c){
 
   if( target == null && c.gameObject.tag == "Ship"){
 
+  ID =  c.gameObject.GetComponent<GO>().tailsConnected;
+    target = c.gameObject.GetComponent<GO>().currentTailTip;
+
+    GetComponent<MeshRenderer>().material.SetColor("_EmissionColor" , Color.HSVToRGB(((float)ID/10) % 1,.8f,1));
+    GetComponent<MeshRenderer>().material.SetColor("_Color" , Color.HSVToRGB(((float)ID/10) %1,.8f,1));
 
 
-  target = c.gameObject.GetComponent<Rigidbody>();//c.gameObject.GetComponent<GO>().currentTailTip;
+GetComponent<TrailRenderer>().startColor =  Color.HSVToRGB(((float)ID/10) %1,.8f,1);
+GetComponent<TrailRenderer>().endColor =  Color.HSVToRGB(((float)ID/10) %1,.8f,0);
+  //target = c.gameObject.GetComponent<Rigidbody>();//c.gameObject.GetComponent<GO>().currentTailTip;
   c.gameObject.GetComponent<GO>().boostAmount +=1;
 
-  a.Play(clip);
-
-  ID =  c.gameObject.GetComponent<GO>().tailsConnected;
+  a.Play(clip,10);
+/*
+rb.drag = Random.Range(1,3.99f);
+rb.mass = Random.Range(1,3.99f);
+*/
 
 
  // sj.connectedBody = target;
@@ -62,7 +78,8 @@ private int ID;
   transform.localScale *= .02f;
 
 
-  c.gameObject.GetComponent<GO>().currentTailTip = c.gameObject.GetComponent<Rigidbody>();
+//GetComponent<SphereCollider>().isTrigger = false;
+  c.gameObject.GetComponent<GO>().currentTailTip = transform;
    c.gameObject.GetComponent<GO>().tailsConnected += 1;
   //Destroy(gameObject);
 }

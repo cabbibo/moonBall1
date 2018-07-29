@@ -19,7 +19,7 @@ public class BumpUp : MonoBehaviour {
 
 
       if( onGround == true ){
-      rb.AddForce( 40 * Vector3.up * Input.GetAxis("X"));
+      rb.AddForce( 4000 * Vector3.up * Input.GetAxis("X"));
     }
     
 		
@@ -27,23 +27,23 @@ public class BumpUp : MonoBehaviour {
 
     void OnTriggerEnter(Collider c){
 
-    if( c.tag == "Ground" ){ 
+    //if( c.tag == "Ground" ){ 
       print("ya"); 
 
       onGround = true;
 
-    }else{ print("na");}
+   // }else{ print("na");}
 
   }
 
   void OnTriggerExit(Collider c){
 
-    if( c.tag == "Ground" ){ 
+    //if( c.tag == "Ground" ){ 
       print("ya"); 
 
       onGround = false;
 
-    }else{ print("na");}
+    //}else{ print("na");}
 
   }
 }

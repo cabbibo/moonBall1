@@ -19,6 +19,6 @@ public class SetShip : MonoBehaviour {
 	void Update () {
 
     Shader.SetGlobalVector("_ShipPosition", ship.position );
-		m.SetVector("_ShipPosition", ship.position );
+	//	m.SetVector("_ShipPosition", ship.position );
 	}
 }
