@@ -61,7 +61,7 @@ private int ID;
 
 
 GetComponent<TrailRenderer>().startColor =  Color.HSVToRGB(((float)ID/10) %1,.8f,1);
-GetComponent<TrailRenderer>().endColor =  Color.HSVToRGB(((float)ID/10) %1,.8f,0);
+GetComponent<TrailRenderer>().endColor =  Color.HSVToRGB(((float)ID/10) %1,.3f,1);
   //target = c.gameObject.GetComponent<Rigidbody>();//c.gameObject.GetComponent<GO>().currentTailTip;
   c.gameObject.GetComponent<GO>().boostAmount +=1;
 

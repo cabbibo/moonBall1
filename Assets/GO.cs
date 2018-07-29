@@ -299,7 +299,7 @@ public class GO : MonoBehaviour {
         //lockPos =   front.transform.position + p - transform.right * Input.GetAxis("LeftStickX") * 100;
 
         float h = terrain.SampleHeight( lockPos );
-       // lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        lockPos = new Vector3( lockPos.x , h , lockPos.z );
 
       }else if(Input.GetAxis("LeftStickX")  > .05f ){
 
@@ -311,7 +311,7 @@ public class GO : MonoBehaviour {
        // lockPos = front.transform.position+ p - transform.right * Input.GetAxis("LeftStickX") * 100;
 
         float h = terrain.SampleHeight( lockPos );
-        //lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        lockPos = new Vector3( lockPos.x , h , lockPos.z );
 
 
       }else{
@@ -325,12 +325,12 @@ public class GO : MonoBehaviour {
         lockedObject = front.transform;
         lockPos = front.transform.position + p * 4 - transform.right * Input.GetAxis("LeftStickX") * 100;;
         float h = terrain.SampleHeight( lockPos );
-        //lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        lockPos = new Vector3( lockPos.x , h , lockPos.z );
         }else{
            lockedObject = back.transform;
         lockPos = back.transform.position + p * 4 - transform.right * Input.GetAxis("LeftStickX") * 100;;
         float h = terrain.SampleHeight( lockPos );
-        //lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        lockPos = new Vector3( lockPos.x , h , lockPos.z );
         }
       }
       lockedObject = body.transform;
