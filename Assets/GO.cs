@@ -11,6 +11,9 @@ public class GO : MonoBehaviour {
 
   public float boostAmount;
 
+  public float suspension;
+  public float _MaxSuspensionHeight;
+
   public float _BoostMULT;
   public float _LerpSpeed;
   public float _RotMULT;
@@ -18,6 +21,18 @@ public class GO : MonoBehaviour {
   public float _AirRotMULT;
   public float _AirBoostMULT;
   public float _LockMULT;
+  public float _AirRotDrag;
+  public float _AirRollBoost;
+  public float _GroundRotDrag;
+  public float _LockThrowDistance;
+  public float _LockThrowDistanceFront;
+  public float _LockThrowHeight;
+
+  public GameObject LockPuller;
+
+  public float _LockHitDist;
+  public AudioClip lockHitClip;
+  public bool canThrow = true;
 
   public float dragBaseAmount;
 
@@ -39,6 +54,11 @@ public class GO : MonoBehaviour {
   public GameObject boosterL;
   public GameObject megaBoostL;
   public GameObject megaBoostR;
+  public GameObject megaBoostAmountL;
+  public GameObject megaBoostAmountR;
+  public float MaxMegaBoost;
+
+
 
   public Transform currentTailTip;
 
@@ -72,13 +92,16 @@ public class GO : MonoBehaviour {
    if( Input.GetAxis("[]") == 0 ){
      lockedObject = null;
      cwl.connected = null;
+     canThrow = true;
 
    }else{
 
     if( lockedObject == null ){
 
-   
+    if( canThrow == true ){
       ThrowLock();
+    
+    }
 
      /* transform.left *  ( Input.GetAxis("LeftStickX")
         lockPos = c.contacts[0].point;
@@ -94,27 +117,50 @@ public class GO : MonoBehaviour {
 
     /*
       Do our lock stuff;
+
+      LOCK
+
     */
 
     if( lockedObject != null){
 
       cwl.connected = lockedObject;
+      cwl.connected = LockPuller.transform;
+     // lockedObject 
       //rb.drag = 10;
-      Vector3 delta = lockedObject.position - lockPos;
+
+
+      Vector3 position = Vector3.Lerp( body.transform.position ,lockPos , .5f);
+
+
+      LockPuller.transform.position = position;
+
+      Vector3 delta = position - lockPos;
 
       float timeLocked = Time.time - lockStartTime;
       timeLocked *= 3;
       timeLocked = Mathf.Clamp( timeLocked , 0, 1);
      // rb.AddForceAtPosition( -delta *30* _MULT * timeLocked ,lockedObject.position);
     //  rb.
-      rb.AddForceAtPosition(  -delta.normalized*1000* _LockMULT * timeLocked ,lockedObject.position + delta * .5f );
 
-
+      rb.AddForceAtPosition(  -delta.normalized*1000* _LockMULT * timeLocked ,position );
+      hookPoint.transform.localScale = new Vector3( _LockHitDist,_LockHitDist,_LockHitDist);
       hookPoint.transform.position = lockPos;
+
+      if( delta.magnitude < _LockHitDist ){
+
+        GetComponent<ShipAudio>().Play( lockHitClip );
+        lockedObject = null;
+        canThrow = false;
+        cwl.connected = null;
+        hookPoint.transform.position = lockPos;
+
+      }
 
     }else{
 
 
+      LockPuller.transform.position = Vector3.Lerp( LockPuller.transform.position , body.transform.position , .1f);
       hookPoint.transform.position = Vector3.left * 10000;
       //rb.drag = startDrag;
     }
@@ -124,6 +170,8 @@ public class GO : MonoBehaviour {
 
     if( onGround == true ){
 
+
+      rb.angularDrag = _GroundRotDrag;
 
      RaycastHit hit;
         // Does the ray intersect any objects excluding the player layer
@@ -169,6 +217,8 @@ public class GO : MonoBehaviour {
 
 //      print( boooooooooost);
 
+
+      if( boostAmount > MaxMegaBoost ){ boostAmount = MaxMegaBoost; }
       if( boostAmount <= 0 ){
         boooooooooost = 0;
          megaBoostL.GetComponent<Booster>().amount =0;
@@ -199,10 +249,24 @@ public class GO : MonoBehaviour {
       rb.drag = 1 - Mathf.Abs(Vector3.Dot( rb.velocity.normalized , -transform.forward.normalized)) + dragBaseAmount; 
 
 
+      DoSuspension();
+      
+
+
+
+
+
+
+      // IN AIR
+
+
+
+
     }else{
 
+ rb.angularDrag = _AirRotDrag;
 
-
+      if( boostAmount > MaxMegaBoost ){ boostAmount = MaxMegaBoost; }
       float boooooooooost = Input.GetAxis("O");
 
 //      print( boooooooooost);
@@ -225,13 +289,14 @@ public class GO : MonoBehaviour {
         }
       }
 
+    
+    float extraRoll = 1+Input.GetAxis("X") * _AirRollBoost;
 
 
+    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _AirRotMULT* extraRoll) ;
+    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _AirRotMULT* extraRoll);
 
-    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _AirRotMULT);
-    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _AirRotMULT);
-
-    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _AirRotMULT);
+    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _AirRotMULT* extraRoll);
     Vector3 final =100 * _AirBoostMULT * ( 1 + 3 * boooooooooost) * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward;
     rb.AddForce(final);
 
@@ -244,8 +309,52 @@ public class GO : MonoBehaviour {
 
     }
 
+    megaBoostAmountL.transform.localScale = new Vector3( 1.1f , boostAmount / MaxMegaBoost , 1.1f );
+    megaBoostAmountL.transform.localPosition = new Vector3( 0, 1-.5f*boostAmount / MaxMegaBoost , 0);
+
+    megaBoostAmountR.transform.localScale = new Vector3( 1.1f , boostAmount / MaxMegaBoost , 1.1f );
+    megaBoostAmountR.transform.localPosition = new Vector3( 0, 1-.5f*boostAmount / MaxMegaBoost , 0);
+
 
 	}
+
+  void DoSuspension(){
+
+    AddDifForce df1 = front.GetComponent<AddDifForce>();
+    AddDifForce df2 = back.GetComponent<AddDifForce>();
+
+
+    if(  df1.dist  < _MaxSuspensionHeight ){
+
+      //rb.AddForceAtPosition( (2/df1.dist) * df1.normal * 1 * suspension, front.transform.position );
+      rb.AddForceAtPosition( (1/df1.dist) * df1.normal * -1 * suspension, back.transform.position );
+    }
+
+
+    if(  df2.dist < _MaxSuspensionHeight ){
+      //rb.AddForceAtPosition( (2/df2.dist) * df2.normal * 1 * suspension, back.transform.position );
+      rb.AddForceAtPosition( (1/df2.dist)  * df2.normal *  -1 * suspension, front.transform.position );
+    }
+
+
+    df1 = wingLeft.GetComponent<AddDifForce>();
+    df2 = wingRight.GetComponent<AddDifForce>();
+
+
+    if(  df1.dist  < _MaxSuspensionHeight ){
+      //rb.AddForceAtPosition( (2/df1.dist) * df1.normal * 1 * suspension, wingLeft.transform.position );
+      rb.AddForceAtPosition( (1/df1.dist) * df1.normal * -1 * suspension, wingRight.transform.position );
+    }
+
+
+    if(  df2.dist < _MaxSuspensionHeight ){
+      //rb.AddForceAtPosition( (2/df2.dist) * df2.normal * 1 * suspension, wingRight.transform.position );
+      rb.AddForceAtPosition((1/df2.dist)  * df2.normal *  -1 * suspension, wingLeft.transform.position );
+    }
+
+
+
+  }
 
 
   void OnCollisionEnter( Collision c ){
@@ -285,34 +394,37 @@ public class GO : MonoBehaviour {
 
       lockStartTime = Time.time;
 
-       Vector3 p = transform.forward *  Input.GetAxis("LeftStickY") * 40;
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(front.transform.position+transform.TransformDirection(Vector3.forward)*10f, transform.TransformDirection(Vector3.forward+Vector3.down*.01f), out hit, 100))
+        {
 
+lockedObject = front.transform;
+ lockPos = hit.point+hit.normal*10;
+          return;
+          
+
+        }
+
+
+
+       Vector3 p = transform.forward *  Input.GetAxis("LeftStickY") * 100 *_LockThrowDistance;
 
 
       if(Input.GetAxis("LeftStickX") < -.05f ){
 
 
         lockedObject = wingLeft.transform;
-        lockPos = wingLeft.transform.position + p  - transform.right * Input.GetAxis("LeftStickX") * 100;
+        lockPos = wingLeft.transform.position + p  - transform.right * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;
 
         //lockedObject = front.transform;
-        //lockPos =   front.transform.position + p - transform.right * Input.GetAxis("LeftStickX") * 100;
+        //lockPos =   front.transform.position + p - transform.right * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;
 
-        float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
 
       }else if(Input.GetAxis("LeftStickX")  > .05f ){
 
         lockedObject = wingRight.transform;
-        lockPos = wingRight.transform.position + p  - transform.right * Input.GetAxis("LeftStickX") * 100;
-
-
-       // lockedObject = front.transform;
-       // lockPos = front.transform.position+ p - transform.right * Input.GetAxis("LeftStickX") * 100;
-
-        float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
-
+        lockPos = wingRight.transform.position + p  - transform.right * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;
 
       }else{
 
@@ -323,17 +435,24 @@ public class GO : MonoBehaviour {
           print(Input.GetAxis("LeftStickY") );
 
         lockedObject = front.transform;
-        lockPos = front.transform.position + p * 4 - transform.right * Input.GetAxis("LeftStickX") * 100;;
-        float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        lockPos = front.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 300 *_LockThrowDistance;;
+
         }else{
            lockedObject = back.transform;
-        lockPos = back.transform.position + p * 4 - transform.right * Input.GetAxis("LeftStickX") * 100;;
-        float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h , lockPos.z );
+        lockPos = back.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;;
+
         }
+
+
+
       }
-      lockedObject = body.transform;
+
+          float h = terrain.SampleHeight( lockPos );
+        lockPos = new Vector3( lockPos.x , h+ _LockThrowHeight, lockPos.z );
+       
+
+
+      //lockedObject = body.transform;
 
   }
 

@@ -26,10 +26,11 @@ Shader "Custom/VolumeCombo" {
   }
 
   SubShader {
-
+ //Tags {"Queue"="Transparent" "RenderType"="Transparent" }
 
     Pass {
 
+      Cull Off
       CGPROGRAM
 
       #pragma vertex vert
@@ -43,6 +44,7 @@ Shader "Custom/VolumeCombo" {
       uniform float _PatternSize;
       uniform float _HueSize;
       uniform sampler2D _MainTex;
+      uniform sampler2D _AudioMap;
 
       uniform float3 _ShipPosition;
       uniform float3 _Light1;
@@ -120,17 +122,17 @@ Shader "Custom/VolumeCombo" {
 
       float getFogVal( float3 pos ){
 
-        float dist = .02*length(pos - _ShipPosition);
+        float dist = .03*length(pos - _ShipPosition);
         //pos *= .02;
 
       	float patternVal = sin( length( pos )  * _PatternSize );
-      	float noiseVal =10*triNoise3D( pos * _PatternSize *.02, 10 , _Time.y );
+      	float noiseVal =triNoise3D( pos * _PatternSize *.02, 10 , _Time.y );
 
         float r = dist;//-.01;
 
-        if( r < 0){
+      if( r < 0){
           noiseVal = 0;
-        }else{
+      }else{
         noiseVal -= .2/ (4*r*r);
       }
 
@@ -142,7 +144,7 @@ Shader "Custom/VolumeCombo" {
         }else{
         noiseVal -= .2/ (4*r*r);
       }*/
-      	return r + noiseVal * .1;//noiseVal;
+      	return r -(.2/ (4*r*r)) - noiseVal*.2;// noiseVal * .4;//noiseVal;
       }
       
       VertexOut vert(VertexIn v) {
@@ -200,7 +202,11 @@ Shader "Custom/VolumeCombo" {
 
         float3 p;
         float hit = 0;
+        float depthVal=0;
+        int finalStep = 0;
         for( int i = 0; i < _NumberSteps; i++ ){
+
+          finalStep = i;
 
           float v=   float( i ) / float(_NumberSteps);
 
@@ -218,23 +224,30 @@ Shader "Custom/VolumeCombo" {
           if( val > -.2){
 
 
-
+           
             float offset = .6;
             float3 d = p - _ShipPosition;
             float val2 = getFogVal( p + normalize(d) * offset);
     
               float delta = clamp((val2 - val) / (.5*offset),0,1);
             hit = 1;
-            col +=hsv( clamp((val+.2) * 1,0,1) * _HueSize + _Time.y * .2 + v * .2, val, 1-val) * ( 1 - float(i)/_NumberSteps);
+            depthVal =  v*10 - val*2;// val;
+
+
+            //col +=hsv( clamp((val+.2) * 1,0,1) * _HueSize + _Time.y * .2 + v * .2, val, 1-val) * ( 1 - float(i)/_NumberSteps);
           break;
         }
 
 
         }
-
-        if( hit < .1 ){
-         // discard;
+      float3 traceCol = float3(0,0,0);
+        if( finalStep > 20 ){
+          discard;
+        }else{
+          traceCol  = tex2D(_AudioMap,float2(1-depthVal/10,0) ).xyz;
         }
+
+        
         //col /=  _NumberSteps;
 
         //col = float3(0,0,0);
@@ -261,14 +274,24 @@ Shader "Custom/VolumeCombo" {
         col += 10/length(ro - _Light5)* hsv( .6,1,m5);
         col += 10/length(ro - _Light6)* hsv( .8,1,m6);*/
 
-        float bCol = triNoise3D(ro*.001 * dot(nor,float3(0,1,0)),1,_Time.y);
-        col = lerp( length(col) * .3 , bCol, saturate(.04f*length(_ShipPosition - ro)* length(bCol)*10-1));
+        float bCol = triNoise3D(ro*.003 * dot(nor,float3(0,1,0)),1,_Time.y);
+        float bCol1 = triNoise3D(ro*.003 * dot(nor,float3(0,1,0))+.01,1,_Time.y);
+        float bCol2 = triNoise3D(ro*.003 * dot(nor,float3(0,1,0))-.01,1,_Time.y);
+
+        float3 bNor = reflect(float3(0,1,0),nor +float3( bCol , bCol1, bCol2));
+
+        col = lerp( length(col) * .3 , pow(dot(normalize(bNor),normalize(rd)),5)*1 + bCol, saturate(.04f*length(_ShipPosition - ro)* length(bCol)*10-1));
         col /= max(.005f*length(_ShipPosition - ro),1);
+       // col /= max(.005f*length(_ShipPosition - ro),1);
+       // col /= max(.005f*length(_ShipPosition - ro),1);
+
+        col = lerp(col , float3(1,1,1)-pow(traceCol,.2)*.9 , saturate(depthVal*1) );
         //col +=hsv(d2*d2 * .2+.2,1,d2*d2); 
         //col +=hsv(d3*d3 * .2+.7,1,d3*d3); 
 
-        //col = tex2D(_MainTex,uv).xyz;
-
+        float3 aCol = tex2D(_AudioMap,float2(dot(normalize(bNor),normalize(rd))*1,0) ).xyz;
+        //col = col * .5 + aCol*1;// lerp( col , col * aCol*4 , length(aCol)).xyz;
+        col = saturate(col);
 
 		    fixed4 color;
         color = fixed4( col , 1. );

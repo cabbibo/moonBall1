@@ -8,12 +8,16 @@ public class AddDifForce : MonoBehaviour {
   public float baseVal;
   public float maxForce;
   public float overallMult;
+  public float fallOff;
 
   private ParticleSystem ps;
   public ShipAudio audio;
   public AudioClip clip;
 
   public float maxHeight;
+
+  public Vector3 normal;
+  public float dist;
 
   public Rigidbody parent;
   public Terrain terrain;
@@ -36,12 +40,14 @@ public class AddDifForce : MonoBehaviour {
 
 
         float dif =  hit.distance;
+        dist = dif;
+        normal = transform.TransformDirection(Vector3.down);
 
         float newDif = (dif-baseVal);
 
         if( newDif < maxHeight ){
 
-          float forceVal= overallMult * multiplier/ Mathf.Pow( newDif , 1f);
+          float forceVal= overallMult * multiplier/ Mathf.Pow( newDif , fallOff);
         //  ps.Emit( (int)(forceVal*.01f));
 
           Vector3 f = forceVal * hit.normal;
@@ -110,7 +116,7 @@ public class AddDifForce : MonoBehaviour {
 
   public void EmitParticles(float collisionStrength){
 
-    //ps.Emit((int)(10 * collisionStrength));
+//    ps.Emit((int)(10 * collisionStrength));
 
     audio.Play( clip ,collisionStrength* .1f, collisionStrength);
   }
