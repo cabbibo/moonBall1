@@ -392,11 +392,13 @@ public class GO : MonoBehaviour {
 
   void ThrowLock(){
 
+
+if( onGround ==  false ){
       lockStartTime = Time.time;
 
         RaycastHit hit;
         // Does the ray intersect any objects excluding the player layer
-        if (Physics.Raycast(front.transform.position+transform.TransformDirection(Vector3.forward)*10f, transform.TransformDirection(Vector3.forward+Vector3.down*.01f), out hit, 100))
+        if (Physics.Raycast(front.transform.position+transform.TransformDirection(-Vector3.forward)*10f, transform.TransformDirection(-Vector3.forward+Vector3.down*.01f), out hit, 100))
         {
 
 lockedObject = front.transform;
@@ -405,6 +407,7 @@ lockedObject = front.transform;
           
 
         }
+}else{
 
 
 
@@ -451,7 +454,7 @@ lockedObject = front.transform;
         lockPos = new Vector3( lockPos.x , h+ _LockThrowHeight, lockPos.z );
        
 
-
+}
       //lockedObject = body.transform;
 
   }
