@@ -181,6 +181,10 @@ Shader "Custom/VolumeCombo" {
       // Fragment Shader
       fixed4 frag(VertexOut v) : COLOR {
 
+            if( sin(v.uv.y*1000)  > .9 || sin(v.uv.x*1000)  > .9 ){
+          discard;
+        }
+
 				// Ray origin 
         float3 ro 			= v.ro;
 
@@ -231,7 +235,7 @@ Shader "Custom/VolumeCombo" {
     
               float delta = clamp((val2 - val) / (.5*offset),0,1);
             hit = 1;
-            depthVal =  v*10 - val*2;// val;
+            depthVal =  v*10 - val*2 +100* float( i %2);// val;
 
 
             //col +=hsv( clamp((val+.2) * 1,0,1) * _HueSize + _Time.y * .2 + v * .2, val, 1-val) * ( 1 - float(i)/_NumberSteps);
@@ -242,7 +246,7 @@ Shader "Custom/VolumeCombo" {
         }
       float3 traceCol = float3(0,0,0);
         if( finalStep > 20 ){
-          discard;
+        //  discard;
         }else{
           traceCol  = tex2D(_AudioMap,float2(1-depthVal/10,0) ).xyz;
         }
@@ -289,10 +293,12 @@ Shader "Custom/VolumeCombo" {
         //col +=hsv(d2*d2 * .2+.2,1,d2*d2); 
         //col +=hsv(d3*d3 * .2+.7,1,d3*d3); 
 
-        float3 aCol = tex2D(_AudioMap,float2(dot(normalize(bNor),normalize(rd))*1,0) ).xyz;
-        //col = col * .5 + aCol*1;// lerp( col , col * aCol*4 , length(aCol)).xyz;
+        float3 aCol = tex2D(_AudioMap,float2(dot(normalize(bNor),normalize(rd))*.1,0) ).xyz;
+        //col = hsv( length(col)*.3 + _Time.y*.1 ,.6,.8);//col * .5 + aCol*aCol*aCol*1;// lerp( col , col * aCol*4 , length(aCol)).xyz;
         col = saturate(col);
 
+
+    
 		    fixed4 color;
         color = fixed4( col , 1. );
         return color;

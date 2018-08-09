@@ -18,7 +18,11 @@ public class MoonsFromClips : MonoBehaviour {
     for( int i = 0; i < clips.Length; i ++ ){
 
       GameObject moon = Instantiate(MoonPrefab);
+      moon.name = "MOON + " + i;
       moon.transform.position = SetMoonPosition( i );
+
+      moon.GetComponent<AudioSource>().clip = clips[i];
+      moon.GetComponent<AudioSource>().Play();
       Moons[i] = moon.transform;
 
     }

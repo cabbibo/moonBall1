@@ -28,7 +28,7 @@ public class BumpUp : MonoBehaviour {
     void OnTriggerEnter(Collider c){
 
     //if( c.tag == "Ground" ){ 
-      print("ya"); 
+//      print("ya"); 
 
       onGround = true;
 
@@ -39,7 +39,7 @@ public class BumpUp : MonoBehaviour {
   void OnTriggerExit(Collider c){
 
     //if( c.tag == "Ground" ){ 
-      print("ya"); 
+//      print("ya"); 
 
       onGround = false;
 

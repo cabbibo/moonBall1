@@ -6,7 +6,11 @@ public class GO : MonoBehaviour {
 
 
   public GameObject hookPoint;
+  public GameObject LockPuller;
   public Camera cam;
+
+  public PitchSquisher boostSquish;
+  public PitchSquisher alwaysSquish;
 
 
   public float boostAmount;
@@ -28,11 +32,11 @@ public class GO : MonoBehaviour {
   public float _LockThrowDistanceFront;
   public float _LockThrowHeight;
 
-  public GameObject LockPuller;
 
   public float _LockHitDist;
   public AudioClip lockHitClip;
   public bool canThrow = true;
+  public int numMoons;
 
   public float dragBaseAmount;
 
@@ -143,6 +147,7 @@ public class GO : MonoBehaviour {
      // rb.AddForceAtPosition( -delta *30* _MULT * timeLocked ,lockedObject.position);
     //  rb.
 
+//      print(  timeLocked);
       rb.AddForceAtPosition(  -delta.normalized*1000* _LockMULT * timeLocked ,position );
       hookPoint.transform.localScale = new Vector3( _LockHitDist,_LockHitDist,_LockHitDist);
       hookPoint.transform.position = lockPos;
@@ -168,10 +173,99 @@ public class GO : MonoBehaviour {
     cameraHolder.GetComponent<Rigidbody>().AddTorque(   Vector3.up * Input.GetAxis("RightStickX") * 80);
  
 
+
+    float lilSquish =  (.4f+.01f*Vector3.Dot( -rb.velocity, transform.forward.normalized ))/2;
+
+    alwaysSquish.Squish(lilSquish);
+
+      if( boostAmount > MaxMegaBoost ){ boostAmount = MaxMegaBoost; }
+      float boooooooooost = Input.GetAxis("O");
+
+//      print( boooooooooost);
+
+      if( boostAmount <= 0 ){
+        boooooooooost = 0;
+         megaBoostL.GetComponent<Booster>().amount =0;
+         megaBoostR.GetComponent<Booster>().amount =0;
+         boostSquish.UnSquish();
+      }else{
+
+        if( boooooooooost > 0.001f){
+          boostAmount -= .01f;
+
+          megaBoostL.GetComponent<Booster>().amount = boooooooooost;
+          megaBoostR.GetComponent<Booster>().amount = boooooooooost;  
+          boostSquish.Squish( lilSquish);
+
+
+
+        }else{
+          megaBoostL.GetComponent<Booster>().amount =0;
+          megaBoostR.GetComponent<Booster>().amount =0;
+            boostSquish.UnSquish();
+
+
+        }
+      }
+
+
+    megaBoostAmountL.transform.localScale = new Vector3( 1.1f , boostAmount / MaxMegaBoost , 1.1f );
+    megaBoostAmountL.transform.localPosition = new Vector3( 0, 1-.5f*boostAmount / MaxMegaBoost , 0);
+
+    megaBoostAmountR.transform.localScale = new Vector3( 1.1f , boostAmount / MaxMegaBoost , 1.1f );
+    megaBoostAmountR.transform.localPosition = new Vector3( 0, 1-.5f*boostAmount / MaxMegaBoost , 0);
+
+
+    
     if( onGround == true ){
 
+      OnGround(boooooooooost);
 
-      rb.angularDrag = _GroundRotDrag;
+
+
+
+
+      // IN AIR
+
+
+
+
+    }else{
+
+          InAir(boooooooooost);
+    }
+
+
+	}
+
+void InAir(float boost){
+
+ rb.angularDrag = _AirRotDrag;
+
+
+    float extraRoll = 1+Input.GetAxis("X") * _AirRollBoost;
+
+
+    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _AirRotMULT* extraRoll) ;
+    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _AirRotMULT* extraRoll);
+
+    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _AirRotMULT* extraRoll);
+    Vector3 final =100 * _AirBoostMULT * ( 1 + 3 * boost) * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward;
+    rb.AddForce(final);
+
+
+
+      
+      boosterL.GetComponent<Booster>().amount = final.magnitude;
+      boosterR.GetComponent<Booster>().amount = final.magnitude;
+
+
+    
+
+
+}
+  void OnGround(float boost){
+          rb.angularDrag = _GroundRotDrag;
 
      RaycastHit hit;
         // Does the ray intersect any objects excluding the player layer
@@ -202,7 +296,12 @@ public class GO : MonoBehaviour {
 
         rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * (300)* _RotMULT);
 
-        rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 40* _RotMULT);
+
+
+        if( Input.GetAxis("[]") == 0 ){
+          rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 400* _RotMULT);
+        }
+        
         rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 400* _RotMULT);
 
 
@@ -210,35 +309,8 @@ public class GO : MonoBehaviour {
         }
      
  
-
-
-
-      float boooooooooost = Input.GetAxis("O");
-
-//      print( boooooooooost);
-
-
-      if( boostAmount > MaxMegaBoost ){ boostAmount = MaxMegaBoost; }
-      if( boostAmount <= 0 ){
-        boooooooooost = 0;
-         megaBoostL.GetComponent<Booster>().amount =0;
-         megaBoostR.GetComponent<Booster>().amount =0;
-      }else{
-
-        if( boooooooooost > 0.001f){
-          boostAmount -= .01f;
-
-          megaBoostL.GetComponent<Booster>().amount = boooooooooost;
-          megaBoostR.GetComponent<Booster>().amount = boooooooooost;
-
-        }else{
-          megaBoostL.GetComponent<Booster>().amount =0;
-          megaBoostR.GetComponent<Booster>().amount =0;
-        }
-      }
-
-      Vector3 final = 100  * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward * _BoostMULT * ( 1 + 3 * boooooooooost);
-		  rb.AddForce(final);
+      Vector3 final = 100  * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward * _BoostMULT * ( 1 + 3 * boost);
+      rb.AddForce(final);
 
       boosterL.GetComponent<Booster>().amount = final.magnitude;
       boosterR.GetComponent<Booster>().amount = final.magnitude;
@@ -255,68 +327,9 @@ public class GO : MonoBehaviour {
 
 
 
+  }
 
 
-      // IN AIR
-
-
-
-
-    }else{
-
- rb.angularDrag = _AirRotDrag;
-
-      if( boostAmount > MaxMegaBoost ){ boostAmount = MaxMegaBoost; }
-      float boooooooooost = Input.GetAxis("O");
-
-//      print( boooooooooost);
-
-      if( boostAmount <= 0 ){
-        boooooooooost = 0;
-         megaBoostL.GetComponent<Booster>().amount =0;
-         megaBoostR.GetComponent<Booster>().amount =0;
-      }else{
-
-        if( boooooooooost > 0.001f){
-          boostAmount -= .01f;
-
-          megaBoostL.GetComponent<Booster>().amount = boooooooooost;
-          megaBoostR.GetComponent<Booster>().amount = boooooooooost;
-
-        }else{
-          megaBoostL.GetComponent<Booster>().amount =0;
-          megaBoostR.GetComponent<Booster>().amount =0;
-        }
-      }
-
-    
-    float extraRoll = 1+Input.GetAxis("X") * _AirRollBoost;
-
-
-    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _AirRotMULT* extraRoll) ;
-    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _AirRotMULT* extraRoll);
-
-    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _AirRotMULT* extraRoll);
-    Vector3 final =100 * _AirBoostMULT * ( 1 + 3 * boooooooooost) * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward;
-    rb.AddForce(final);
-
-
-
-      
-      boosterL.GetComponent<Booster>().amount = final.magnitude;
-      boosterR.GetComponent<Booster>().amount = final.magnitude;
-
-
-    }
-
-    megaBoostAmountL.transform.localScale = new Vector3( 1.1f , boostAmount / MaxMegaBoost , 1.1f );
-    megaBoostAmountL.transform.localPosition = new Vector3( 0, 1-.5f*boostAmount / MaxMegaBoost , 0);
-
-    megaBoostAmountR.transform.localScale = new Vector3( 1.1f , boostAmount / MaxMegaBoost , 1.1f );
-    megaBoostAmountR.transform.localPosition = new Vector3( 0, 1-.5f*boostAmount / MaxMegaBoost , 0);
-
-
-	}
 
   void DoSuspension(){
 
@@ -393,7 +406,7 @@ public class GO : MonoBehaviour {
   void ThrowLock(){
 
 
-if( onGround ==  false ){
+/*if( onGround ==  false ){
       lockStartTime = Time.time;
 
         RaycastHit hit;
@@ -407,8 +420,8 @@ lockedObject = front.transform;
           
 
         }
-}else{
-
+}else{*/
+ lockStartTime = Time.time;
 
 
        Vector3 p = transform.forward *  Input.GetAxis("LeftStickY") * 100 *_LockThrowDistance;
@@ -457,7 +470,7 @@ lockedObject = front.transform;
 }
       //lockedObject = body.transform;
 
-  }
+  //}
 
 
   void OnTriggerEnter(Collider c){
@@ -467,7 +480,7 @@ lockedObject = front.transform;
 
       onGround = true;
 
-    }else{ print("na");}
+    }//else{ print("na");}
 
   }
 
@@ -478,7 +491,7 @@ lockedObject = front.transform;
 
       onGround = false;
 
-    }else{ print("na");}
+    }//else{ print("na");}
 
   }
 }

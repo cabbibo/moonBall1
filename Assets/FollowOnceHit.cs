@@ -7,11 +7,12 @@ public class FollowOnceHit : MonoBehaviour {
 public GO player;
 public Transform target;
 public AudioClip clip;
-public ShipAudio a;
+public AudioPlayer a;
 public AudioSource aud;
 public float lerpSpeed;
 
 public float id; 
+public float[] steps;//[0,2,3,5]
 
 
 private Rigidbody rb;
@@ -44,9 +45,10 @@ private int ID;
 
       //rb.AddForce( -(transform.position - target.position)*20 );
 
-      Vector3 fPos = target.position +  target.forward * 1 * (2+(float)ID);
+      Vector3 fPos = player.transform.position + player.transform.TransformDirection( Vector3.up * (1+.6f * (float)ID));// +  target.forward * 1 * (2+(float)ID);
       ///transform.position = Vector3.Lerp(transform.position , fPos,.5f);//
-      transform.position = Vector3.Lerp(transform.position, target.position + target.TransformDirection( Vector3.up * .6f),lerpSpeed);//
+      float fLerp = lerpSpeed / (2.3f*(float)ID+1);
+      transform.position = Vector3.Lerp(transform.position, fPos ,fLerp);//
 
 
      // Vector3 dif = (transform.position - player.transform.position).normalized * 4;
@@ -61,8 +63,8 @@ private int ID;
 
 tr.startColor =  Color.HSVToRGB(((float)ID/10) %1,.8f,1);
 tr.endColor =  Color.HSVToRGB(((float)ID/10) %1,.3f,1);
-tr.time =  .01f + .1f * ID;;// Color.HSVToRGB(((float)ID/10) %1,.3f,1);
-tr.startWidth = .01f + .01f * (float)ID;;// Color.HSVToRGB(((float)ID/10) %1,.3f,1);
+tr.time =  .5f + .1f * ID;;// Color.HSVToRGB(((float)ID/10) %1,.3f,1);
+tr.startWidth = .01f+ .01f * (float)ID;;// Color.HSVToRGB(((float)ID/10) %1,.3f,1);
 
 lr.endColor =  Color.HSVToRGB(((float)ID/10) %1,.8f,1);
 lr.startColor =  Color.HSVToRGB((((float)ID+1)/10) %1,.8f,1);
@@ -86,41 +88,44 @@ lr.startColor =  Color.HSVToRGB((((float)ID+1)/10) %1,.8f,1);
 		
 	}
 
+
+  public void StartHit(Transform c){
+
+
+    if( target == null  ){
+      ID = player.tailsConnected;
+      target =player.currentTailTip;
+
+      GetComponent<MeshRenderer>().material.SetColor("_EmissionColor" , Color.HSVToRGB(((float)ID/10) % 1,.8f,1));
+      GetComponent<MeshRenderer>().material.SetColor("_Color" , Color.HSVToRGB(((float)ID/10) %1,.8f,1));
+
+
+    //target = c.gameObject.GetComponent<Rigidbody>();//c.gameObject.GetComponent<GO>().currentTailTip;
+   player.boostAmount +=1;
+
+    a.Play(clip,.6f,10);
+
+    aud.pitch =  Mathf.Pow( 1.05946f,steps[Random.Range(0,steps.Length)]);//Elements[Random.Range(0,Elements.Length)];
+    aud.Play();
+  /*
+  rb.drag = Random.Range(1,3.99f);
+  rb.mass = Random.Range(1,3.99f);
+  */
+
+
+   // sj.connectedBody = target;
+  //  rb.isKinematic = false;
+
+    transform.localScale *= .003f;
+
+     GetComponent<SphereCollider>().enabled = false;
+    player.currentTailTip = transform;
+     player.tailsConnected += 1;
+
+   }
+
+  }
   void OnTriggerEnter(Collider c){
 
-  if( target == null && c.gameObject.tag == "Ship"){
-
-  ID =  c.gameObject.GetComponent<GO>().tailsConnected;
-    target = c.gameObject.GetComponent<GO>().currentTailTip;
-
-    GetComponent<MeshRenderer>().material.SetColor("_EmissionColor" , Color.HSVToRGB(((float)ID/10) % 1,.8f,1));
-    GetComponent<MeshRenderer>().material.SetColor("_Color" , Color.HSVToRGB(((float)ID/10) %1,.8f,1));
-
-
-  //target = c.gameObject.GetComponent<Rigidbody>();//c.gameObject.GetComponent<GO>().currentTailTip;
-  c.gameObject.GetComponent<GO>().boostAmount +=1;
-
-  a.Play(clip,10);
-/*
-rb.drag = Random.Range(1,3.99f);
-rb.mass = Random.Range(1,3.99f);
-*/
-
-
- // sj.connectedBody = target;
-//  rb.isKinematic = false;
-
-  transform.localScale *= .02f;
-
-   GetComponent<SphereCollider>().enabled = false;
-  c.gameObject.GetComponent<GO>().currentTailTip = transform;
-   c.gameObject.GetComponent<GO>().tailsConnected += 1;
-  //Destroy(gameObject);
-}
-
-  /*if( target == null && c.gameObject.tag == "Ship"){
-    rb.isKinematic = false;
-    target = c.rigidbody;
-    }*/
   }
 }
