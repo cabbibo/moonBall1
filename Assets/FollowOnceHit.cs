@@ -10,6 +10,7 @@ public AudioClip clip;
 public AudioPlayer a;
 public AudioSource aud;
 public float lerpSpeed;
+public Material onceFollowMaterial;
 
 public float id; 
 public float[] steps;//[0,2,3,5]
@@ -95,7 +96,7 @@ lr.startColor =  Color.HSVToRGB((((float)ID+1)/10) %1,.8f,1);
     if( target == null  ){
       ID = player.tailsConnected;
       target =player.currentTailTip;
-
+      GetComponent<MeshRenderer>().material = onceFollowMaterial;
       GetComponent<MeshRenderer>().material.SetColor("_EmissionColor" , Color.HSVToRGB(((float)ID/10) % 1,.8f,1));
       GetComponent<MeshRenderer>().material.SetColor("_Color" , Color.HSVToRGB(((float)ID/10) %1,.8f,1));
 

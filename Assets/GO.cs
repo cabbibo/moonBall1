@@ -452,19 +452,29 @@ lockedObject = front.transform;
 
         lockedObject = front.transform;
         lockPos = front.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 300 *_LockThrowDistance;;
-
+    
         }else{
            lockedObject = back.transform;
-        lockPos = back.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;;
+          lockPos = back.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;;
+
+
 
         }
+
+
+        if( Mathf.Abs(Input.GetAxis("LeftStickY"))  <  0.05f ){
+              lockedObject = front.transform;
+               lockPos = front.transform.position + p * 4 - transform.forward *50 *_LockThrowDistance;;
+     
+          }
 
 
 
       }
 
           float h = terrain.SampleHeight( lockPos );
-        lockPos = new Vector3( lockPos.x , h+ _LockThrowHeight, lockPos.z );
+          //h+ _LockThrowHeight
+        lockPos = new Vector3( lockPos.x , lockPos.y , lockPos.z );
        
 
 }
