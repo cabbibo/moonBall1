@@ -1,4 +1,4 @@
-﻿Shader "Custom/DiscardSphere" {
+﻿Shader "Custom/HellPlaneShader" {
   Properties {
     _MainTex ("Texture", 2D) = "red" {}
   
@@ -214,7 +214,7 @@
             float delta = clamp((val2 - val) / (.5*offset),0,1);
             hit = 1;
             depthVal = delta * .2;//  v*10 - val*2 +100* float( i %2);// val;
- 						traceCol  += .4*hsv(val* _HueSize+_Time.y*.2,1,1);
+ 						traceCol  = hsv(val* _HueSize+_Time.y*.2,1,1);
 
             //col +=hsv( clamp((val+.2) * 1,0,1) * _HueSize + _Time.y * .2 + v * .2, val, 1-val) * ( 1 - float(i)/_NumberSteps);
           //break;

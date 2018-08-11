@@ -7,32 +7,22 @@ public class AudioPlayer : MonoBehaviour {
   public int playID;
   public int numSources;
 
-    public static AudioPlayer Instance
-    {
-        get
-        {
-            return _instance;
-        }
-    }
+    public static AudioPlayer Instance { get; private set; }
 
     private static AudioPlayer _instance;
 
     private GameObject[] objects;
     private AudioSource[] sources;
 
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
-    }
 
     void Start () {
+
+                if( Instance == null ){
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }else{
+            Destroy( gameObject);
+        }
 
         sources = new AudioSource[numSources];
         objects = new GameObject[numSources];
@@ -40,7 +30,9 @@ public class AudioPlayer : MonoBehaviour {
         for( int i = 0; i < numSources; i++){
             objects[i] = new GameObject();
             objects[i].transform.parent = transform;
+
           sources[i] = objects[i].AddComponent<AudioSource>() as AudioSource;
+              sources[i].dopplerLevel = 0;
             sources[i].playOnAwake = false;
         }
     }

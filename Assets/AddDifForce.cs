@@ -11,7 +11,6 @@ public class AddDifForce : MonoBehaviour {
   public float fallOff;
 
   private ParticleSystem ps;
-  public ShipAudio audio;
   public AudioClip clip;
 
   public float maxHeight;
@@ -116,9 +115,9 @@ public class AddDifForce : MonoBehaviour {
 
   public void EmitParticles(float collisionStrength){
 
-//    ps.Emit((int)(10 * collisionStrength));
+   //ps.Emit((int)(100 * collisionStrength));
 
-    audio.Play( clip ,collisionStrength* .1f, collisionStrength);
+    AudioPlayer.Instance.Play( clip , 10 *collisionStrength, 1);//collisionStrength);
   }
 
   void OnCollisionEnter( Collision c ){

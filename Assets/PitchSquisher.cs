@@ -8,17 +8,26 @@ public class PitchSquisher : MonoBehaviour {
   public float volMultiplier;
   public float pitchMultiplier;
   public float pitchBase;
+  [SerializeField] private float pitchLerp = .1f;
+  [SerializeField] private float volumeLerp = .1f;
+  public float targetPitch;
+  public float targetVolume;
   public float basePitch;
   public float baseVol;
   public float powPitch = 1;
 
   public void Squish(float val){
-      audio.volume = volMultiplier *val;
-      audio.pitch = Mathf.Pow( pitchMultiplier  , powPitch ) * val + pitchBase;
+      targetVolume = volMultiplier *val;
+      targetPitch = Mathf.Pow( pitchMultiplier  , powPitch ) * val + pitchBase;
   }
 
     public void UnSquish(){
-      audio.volume = baseVol; //volMultiplier *val;
-      audio.pitch = basePitch;//pitchMultiplier *val + pitchBase;
+      targetVolume = baseVol; //volMultiplier *val;
+      targetPitch = basePitch;//pitchMultiplier *val + pitchBase;
   }
+
+ public void Update(){
+  audio.volume = Mathf.Lerp( audio.volume , targetVolume , volumeLerp);
+  audio.pitch = Mathf.Lerp( audio.pitch , targetPitch , pitchLerp);
+ }
 }

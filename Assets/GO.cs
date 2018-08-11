@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Rewired;
+
 
 public class GO : MonoBehaviour {
 
@@ -12,6 +14,7 @@ public class GO : MonoBehaviour {
   public PitchSquisher boostSquish;
   public PitchSquisher alwaysSquish;
 
+  public float StickAdjust;
 
   public float boostAmount;
 
@@ -31,6 +34,7 @@ public class GO : MonoBehaviour {
   public float _LockThrowDistance;
   public float _LockThrowDistanceFront;
   public float _LockThrowHeight;
+  public float upThrowMult;
 
 
   public float _LockHitDist;
@@ -62,6 +66,8 @@ public class GO : MonoBehaviour {
   public GameObject megaBoostAmountR;
   public float MaxMegaBoost;
 
+  public float dragMultiplier;
+
 
 
   public Transform currentTailTip;
@@ -76,8 +82,12 @@ public class GO : MonoBehaviour {
 
   public int tailsConnected = 0;
   public float lockStartTime;
+
+  private Player player;
 	// Use this for initialization
 	void Start () {
+
+    player = ReInput.players.GetPlayer(0);
     rb = GetComponent<Rigidbody>();
 
     currentTailTip = body.transform;//back.transform;
@@ -87,13 +97,20 @@ public class GO : MonoBehaviour {
     cwl = hookPoint.GetComponent<connectWithLine>();
 		
 	}
-	
+
+  void ProcessInput(){
+//    print( player.GetAxis("JoystickLeftX") );
+  }
+
+
 	// Update is called once per frame
 	void FixedUpdate () {
 
+    ProcessInput();
+
     cam.fieldOfView = Mathf.Lerp( cam.fieldOfView , 60 + Mathf.Clamp( rb.velocity.magnitude , 0 , 60), .1f );
 
-   if( Input.GetAxis("[]") == 0 ){
+   if( player.GetAxis("[]") == 0 ){
      lockedObject = null;
      cwl.connected = null;
      canThrow = true;
@@ -107,12 +124,12 @@ public class GO : MonoBehaviour {
     
     }
 
-     /* transform.left *  ( Input.GetAxis("LeftStickX")
+     /* transform.left *  ( player.GetAxis("JoystickLeftX")
         lockPos = c.contacts[0].point;
       lockedObject = wingLeft.transform;
 
 
-      rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX") *  4000 * Input.GetAxis("[]"));*/
+      rb.AddTorque( transform.forward *  player.GetAxis("JoystickLeftX") *  4000 * player.GetAxis("[]"));*/
 
     }
 
@@ -134,7 +151,7 @@ public class GO : MonoBehaviour {
       //rb.drag = 10;
 
 
-      Vector3 position = Vector3.Lerp( body.transform.position ,lockPos , .5f);
+      Vector3 position = Vector3.Lerp( body.transform.position , lockPos , .3f);
 
 
       LockPuller.transform.position = position;
@@ -154,7 +171,7 @@ public class GO : MonoBehaviour {
 
       if( delta.magnitude < _LockHitDist ){
 
-        GetComponent<ShipAudio>().Play( lockHitClip );
+        AudioPlayer.Instance.Play( lockHitClip  );
         lockedObject = null;
         canThrow = false;
         cwl.connected = null;
@@ -170,7 +187,7 @@ public class GO : MonoBehaviour {
       //rb.drag = startDrag;
     }
 
-    cameraHolder.GetComponent<Rigidbody>().AddTorque(   Vector3.up * Input.GetAxis("RightStickX") * 80);
+    cameraHolder.GetComponent<Rigidbody>().AddTorque(   Vector3.up *StickAdjust* player.GetAxis("JoystickRightX") * 80);
  
 
 
@@ -178,8 +195,14 @@ public class GO : MonoBehaviour {
 
     alwaysSquish.Squish(lilSquish);
 
+
+/*
+
+  BOOST STUFF
+
+*/
       if( boostAmount > MaxMegaBoost ){ boostAmount = MaxMegaBoost; }
-      float boooooooooost = Input.GetAxis("O");
+      float boooooooooost = player.GetAxis("O");
 
 //      print( boooooooooost);
 
@@ -219,6 +242,7 @@ public class GO : MonoBehaviour {
     
     if( onGround == true ){
 
+     // print("on Ground");
       OnGround(boooooooooost);
 
 
@@ -232,6 +256,8 @@ public class GO : MonoBehaviour {
 
     }else{
 
+//      print( "in air");
+
           InAir(boooooooooost);
     }
 
@@ -243,14 +269,14 @@ void InAir(float boost){
  rb.angularDrag = _AirRotDrag;
 
 
-    float extraRoll = 1+Input.GetAxis("X") * _AirRollBoost;
+    float extraRoll = 1+player.GetAxis("X") * _AirRollBoost;
 
 
-    rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * 4* 180* _AirRotMULT* extraRoll) ;
-    rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 4*180* _AirRotMULT* extraRoll);
+    rb.AddTorque( StickAdjust * transform.up * player.GetAxis("JoystickLeftX")*(1-player.GetAxis("L1"))  * 4* 180* _AirRotMULT* extraRoll) ;
+    rb.AddTorque( StickAdjust * transform.right * player.GetAxis("JoystickLeftY") * 4*180* _AirRotMULT* extraRoll);
 
-    rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 4*180* _AirRotMULT* extraRoll);
-    Vector3 final =100 * _AirBoostMULT * ( 1 + 3 * boost) * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward;
+    rb.AddTorque(  StickAdjust * transform.forward *  player.GetAxis("JoystickLeftX")  *(player.GetAxis("L1")) * 4*180* _AirRotMULT* extraRoll);
+    Vector3 final =100 * _AirBoostMULT * ( 1 + 3 * boost) * (-player.GetAxis("R2")+player.GetAxis("L2")) * transform.forward;
     rb.AddForce(final);
 
 
@@ -292,24 +318,24 @@ void InAir(float boost){
 
 
         // jump
-        rb.AddForce( 800 * Vector3.up * Input.GetAxis("X") * _JumpMULT);
+        rb.AddForce( 800 * Vector3.up * player.GetAxis("X") * _JumpMULT);
 
-        rb.AddTorque( transform.up * Input.GetAxis("LeftStickX")*(1-Input.GetAxis("L1"))  * (300)* _RotMULT);
+        rb.AddTorque( StickAdjust * transform.up * player.GetAxis("JoystickLeftX")*(1-player.GetAxis("L1"))  * (300)* _RotMULT);
 
 
 
-        if( Input.GetAxis("[]") == 0 ){
-          rb.AddTorque( transform.right * Input.GetAxis("LeftStickY") * 400* _RotMULT);
+        if( player.GetAxis("[]") == 0 ){
+          rb.AddTorque(  StickAdjust *transform.right * player.GetAxis("JoystickLeftY") * 400* _RotMULT);
         }
         
-        rb.AddTorque( transform.forward *  Input.GetAxis("LeftStickX")  *(Input.GetAxis("L1")) * 400* _RotMULT);
+        rb.AddTorque(  StickAdjust *transform.forward *  player.GetAxis("JoystickLeftX")  *(player.GetAxis("L1")) * 400* _RotMULT);
 
 
 
         }
      
  
-      Vector3 final = 100  * (-Input.GetAxis("R2")+Input.GetAxis("L2")) * transform.forward * _BoostMULT * ( 1 + 3 * boost);
+      Vector3 final = 100  * (-player.GetAxis("R2")+player.GetAxis("L2")) * transform.forward * _BoostMULT * ( 1 + 3 * boost);
       rb.AddForce(final);
 
       boosterL.GetComponent<Booster>().amount = final.magnitude;
@@ -318,7 +344,7 @@ void InAir(float boost){
 
 
 
-      rb.drag = 1 - Mathf.Abs(Vector3.Dot( rb.velocity.normalized , -transform.forward.normalized)) + dragBaseAmount; 
+      rb.drag = (1 - Mathf.Abs(Vector3.Dot( rb.velocity.normalized , -transform.forward.normalized)) + dragBaseAmount) * dragMultiplier; 
 
 
       DoSuspension();
@@ -424,45 +450,45 @@ lockedObject = front.transform;
  lockStartTime = Time.time;
 
 
-       Vector3 p = transform.forward *  Input.GetAxis("LeftStickY") * 100 *_LockThrowDistance;
+       Vector3 p = transform.up * upThrowMult + transform.forward *   StickAdjust *player.GetAxis("JoystickLeftY") * 100 *_LockThrowDistance;
 
 
-      if(Input.GetAxis("LeftStickX") < -.05f ){
+      if( StickAdjust *player.GetAxis("JoystickLeftX") < -.05f ){
 
 
         lockedObject = wingLeft.transform;
-        lockPos = wingLeft.transform.position + p  - transform.right * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;
+        lockPos = wingLeft.transform.position + p  - transform.right *  StickAdjust *player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;
 
         //lockedObject = front.transform;
-        //lockPos =   front.transform.position + p - transform.right * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;
+        //lockPos =   front.transform.position + p - transform.right * player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;
 
 
-      }else if(Input.GetAxis("LeftStickX")  > .05f ){
+      }else if( StickAdjust *player.GetAxis("JoystickLeftX")  > .05f ){
 
         lockedObject = wingRight.transform;
-        lockPos = wingRight.transform.position + p  - transform.right * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;
+        lockPos = wingRight.transform.position + p  - transform.right *  StickAdjust *player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;
 
       }else{
 
 
-          print(Input.GetAxis("LeftStickY") ); 
+          print(player.GetAxis("JoystickLeftY") ); 
 
-        if(Input.GetAxis("LeftStickY")  <= 0 ){
-          print(Input.GetAxis("LeftStickY") );
+        if( StickAdjust *player.GetAxis("JoystickLeftY")  <= 0 ){
+          print(player.GetAxis("JoystickLeftY") );
 
         lockedObject = front.transform;
-        lockPos = front.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 300 *_LockThrowDistance;;
+        lockPos = front.transform.position + p * 4 -  StickAdjust *transform.forward * player.GetAxis("JoystickLeftX") * 300 *_LockThrowDistance;;
     
         }else{
            lockedObject = back.transform;
-          lockPos = back.transform.position + p * 4 - transform.forward * Input.GetAxis("LeftStickX") * 100 *_LockThrowDistance;;
+          lockPos = back.transform.position + p * 4 -  StickAdjust *transform.forward * player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;;
 
 
 
         }
 
 
-        if( Mathf.Abs(Input.GetAxis("LeftStickY"))  <  0.05f ){
+          if(  StickAdjust *Mathf.Abs(player.GetAxis("JoystickLeftY"))  <  0.05f ){
               lockedObject = front.transform;
                lockPos = front.transform.position + p * 4 - transform.forward *50 *_LockThrowDistance;;
      
@@ -497,7 +523,7 @@ lockedObject = front.transform;
   void OnTriggerExit(Collider c){
 
     if( c.tag == "Ground" ){ 
-//      print("ya"); 
+//  s    print("ya"); 
 
       onGround = false;
 

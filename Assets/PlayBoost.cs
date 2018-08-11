@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayBoost : MonoBehaviour {
 
  
-
-  public ShipAudio a;
+  public float pitchSpeedMultiplier;
+  public float pitchSpeedBase;
   public Booster b;
+  public Rigidbody rb;
   public AudioClip c;
   public float soundChance;
 
@@ -24,7 +25,7 @@ public class PlayBoost : MonoBehaviour {
 
     if( v < b.amount * .001f * soundChance ){
       //print("d");
-     a.Play(c, 10.2f,  .8f);
+     AudioPlayer.Instance.Play(c, rb.velocity.magnitude * pitchSpeedMultiplier + pitchSpeedBase,  .8f);
       }
 
 	}
