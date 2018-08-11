@@ -45,7 +45,7 @@ public class GO : MonoBehaviour {
   public float dragBaseAmount;
 
   public Terrain terrain;
-  private Rigidbody rb;
+  public Rigidbody rb;
 
   private Vector3 x;
   private Vector3 y;
@@ -94,7 +94,7 @@ public class GO : MonoBehaviour {
     onGround = false;
 
     startDrag = rb.drag;
-    cwl = hookPoint.GetComponent<connectWithLine>();
+   // cwl = hookPoint.GetComponent<connectWithLine>();
 		
 	}
 
@@ -110,82 +110,8 @@ public class GO : MonoBehaviour {
 
     cam.fieldOfView = Mathf.Lerp( cam.fieldOfView , 60 + Mathf.Clamp( rb.velocity.magnitude , 0 , 60), .1f );
 
-   if( player.GetAxis("[]") == 0 ){
-     lockedObject = null;
-     cwl.connected = null;
-     canThrow = true;
-
-   }else{
-
-    if( lockedObject == null ){
-
-    if( canThrow == true ){
-      ThrowLock();
-    
-    }
-
-     /* transform.left *  ( player.GetAxis("JoystickLeftX")
-        lockPos = c.contacts[0].point;
-      lockedObject = wingLeft.transform;
 
 
-      rb.AddTorque( transform.forward *  player.GetAxis("JoystickLeftX") *  4000 * player.GetAxis("[]"));*/
-
-    }
-
-   }
-
-
-    /*
-      Do our lock stuff;
-
-      LOCK
-
-    */
-
-    if( lockedObject != null){
-
-      cwl.connected = lockedObject;
-      cwl.connected = LockPuller.transform;
-     // lockedObject 
-      //rb.drag = 10;
-
-
-      Vector3 position = Vector3.Lerp( body.transform.position , lockPos , .3f);
-
-
-      LockPuller.transform.position = position;
-
-      Vector3 delta = position - lockPos;
-
-      float timeLocked = Time.time - lockStartTime;
-      timeLocked *= 3;
-      timeLocked = Mathf.Clamp( timeLocked , 0, 1);
-     // rb.AddForceAtPosition( -delta *30* _MULT * timeLocked ,lockedObject.position);
-    //  rb.
-
-//      print(  timeLocked);
-      rb.AddForceAtPosition(  -delta.normalized*1000* _LockMULT * timeLocked ,position );
-      hookPoint.transform.localScale = new Vector3( _LockHitDist,_LockHitDist,_LockHitDist);
-      hookPoint.transform.position = lockPos;
-
-      if( delta.magnitude < _LockHitDist ){
-
-        AudioPlayer.Instance.Play( lockHitClip  );
-        lockedObject = null;
-        canThrow = false;
-        cwl.connected = null;
-        hookPoint.transform.position = lockPos;
-
-      }
-
-    }else{
-
-
-      LockPuller.transform.position = Vector3.Lerp( LockPuller.transform.position , body.transform.position , .1f);
-      hookPoint.transform.position = Vector3.left * 10000;
-      //rb.drag = startDrag;
-    }
 
     cameraHolder.GetComponent<Rigidbody>().AddTorque(   Vector3.up *StickAdjust* player.GetAxis("JoystickRightX") * 80);
  
@@ -428,85 +354,6 @@ void InAir(float boost){
   }
 
   }
-
-  void ThrowLock(){
-
-
-/*if( onGround ==  false ){
-      lockStartTime = Time.time;
-
-        RaycastHit hit;
-        // Does the ray intersect any objects excluding the player layer
-        if (Physics.Raycast(front.transform.position+transform.TransformDirection(-Vector3.forward)*10f, transform.TransformDirection(-Vector3.forward+Vector3.down*.01f), out hit, 100))
-        {
-
-lockedObject = front.transform;
- lockPos = hit.point+hit.normal*10;
-          return;
-          
-
-        }
-}else{*/
- lockStartTime = Time.time;
-
-
-       Vector3 p = transform.up * upThrowMult + transform.forward *   StickAdjust *player.GetAxis("JoystickLeftY") * 100 *_LockThrowDistance;
-
-
-      if( StickAdjust *player.GetAxis("JoystickLeftX") < -.05f ){
-
-
-        lockedObject = wingLeft.transform;
-        lockPos = wingLeft.transform.position + p  - transform.right *  StickAdjust *player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;
-
-        //lockedObject = front.transform;
-        //lockPos =   front.transform.position + p - transform.right * player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;
-
-
-      }else if( StickAdjust *player.GetAxis("JoystickLeftX")  > .05f ){
-
-        lockedObject = wingRight.transform;
-        lockPos = wingRight.transform.position + p  - transform.right *  StickAdjust *player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;
-
-      }else{
-
-
-          print(player.GetAxis("JoystickLeftY") ); 
-
-        if( StickAdjust *player.GetAxis("JoystickLeftY")  <= 0 ){
-          print(player.GetAxis("JoystickLeftY") );
-
-        lockedObject = front.transform;
-        lockPos = front.transform.position + p * 4 -  StickAdjust *transform.forward * player.GetAxis("JoystickLeftX") * 300 *_LockThrowDistance;;
-    
-        }else{
-           lockedObject = back.transform;
-          lockPos = back.transform.position + p * 4 -  StickAdjust *transform.forward * player.GetAxis("JoystickLeftX") * 100 *_LockThrowDistance;;
-
-
-
-        }
-
-
-          if(  StickAdjust *Mathf.Abs(player.GetAxis("JoystickLeftY"))  <  0.05f ){
-              lockedObject = front.transform;
-               lockPos = front.transform.position + p * 4 - transform.forward *50 *_LockThrowDistance;;
-     
-          }
-
-
-
-      }
-
-          float h = terrain.SampleHeight( lockPos );
-          //h+ _LockThrowHeight
-        lockPos = new Vector3( lockPos.x , lockPos.y , lockPos.z );
-       
-
-}
-      //lockedObject = body.transform;
-
-  //}
 
 
   void OnTriggerEnter(Collider c){

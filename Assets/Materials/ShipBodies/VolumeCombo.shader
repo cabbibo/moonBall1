@@ -182,7 +182,7 @@ Shader "Custom/VolumeCombo" {
       fixed4 frag(VertexOut v) : COLOR {
 
             if( sin(v.uv.y*1000)  > .9 || sin(v.uv.x*1000)  > .9 ){
-          discard;
+          //discard;
         }
 
 				// Ray origin 

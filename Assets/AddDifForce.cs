@@ -9,6 +9,7 @@ public class AddDifForce : MonoBehaviour {
   public float maxForce;
   public float overallMult;
   public float fallOff;
+  public float upOrDown;
 
   private ParticleSystem ps;
   public AudioClip clip;
@@ -64,51 +65,6 @@ public class AddDifForce : MonoBehaviour {
 
 
         }
-
-/*       float h = terrain.SampleHeight(transform.position);
-
-      float eps = .01f;
-
-
-      Vector3 left = transform.position + Vector3.left * eps;
-      Vector3 right = transform.position - Vector3.left * eps;
-
-      Vector3 up = transform.position + Vector3.forward * eps;
-      Vector3 down = transform.position - Vector3.forward * eps;
-
-      float hL = terrain.SampleHeight(left);
-      float hR = terrain.SampleHeight(right);
-      float hU = terrain.SampleHeight(up);
-      float hD = terrain.SampleHeight(down);
-
-
-
-      left  = new Vector3( left.x   , hL , left.z   );
-      right = new Vector3( right.x  , hR , right.z  );
-      up    = new Vector3( up.x     , hU , up.z     );
-      down  = new Vector3( down.x   , hD , down.z   );
-
-      
-      Vector3 nor = Vector3.Cross( (left-right).normalized,(up-down).normalized );
-
-
-      float dif =  transform.position.y-h;
-
-      float newDif = (dif-baseVal);
-
-      if( newDif < maxHeight ){
-
-        Vector3 f = overallMult * multiplier * nor / Mathf.Pow(newDif , .5f);
-
-        if( f.magnitude > maxForce ){
-          f = f.normalized * maxForce;
-        }
-
-        float velAdder =.7f;// Mathf.Clamp( .04f * parent.velocity.magnitude , 0, 1);
-        parent.AddForceAtPosition( f * (.3f + velAdder) , transform.position );
-        //GetComponent<Rigidbody>().AddForce( f  );
-      }
-		*/
 
 	}
 

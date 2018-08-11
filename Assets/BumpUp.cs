@@ -8,6 +8,8 @@ public class BumpUp : MonoBehaviour {
   private bool onGround = false;
 
   public Rigidbody rb;
+  public float xForce;
+  public float baseForce;
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +21,7 @@ public class BumpUp : MonoBehaviour {
 
 
       if( onGround == true ){
-      rb.AddForce( 4000 * Vector3.up * Input.GetAxis("X"));
+      rb.AddForce( baseForce * Vector3.up * (1 +xForce* Input.GetAxis("X")));
     }
     
 		
@@ -27,23 +29,23 @@ public class BumpUp : MonoBehaviour {
 
     void OnTriggerEnter(Collider c){
 
-    //if( c.tag == "Ground" ){ 
+    if( c.tag == "Ground" ){ 
 //      print("ya"); 
 
       onGround = true;
 
-   // }else{ print("na");}
+    };//else{ print("na");}
 
   }
 
   void OnTriggerExit(Collider c){
 
-    //if( c.tag == "Ground" ){ 
+    if( c.tag == "Ground" ){ 
 //      print("ya"); 
 
       onGround = false;
 
-    //}else{ print("na");}
+    }//else{ print("na");}
 
   }
 }
