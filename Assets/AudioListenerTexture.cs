@@ -90,6 +90,6 @@ public class AudioListenerTexture : MonoBehaviour
         AudioTexture.SetPixels ( pixels );
         AudioTexture.Apply ( );
 
-        _buffer.SetData ( samples );
+       // _buffer.SetData ( samples );
     }
 }

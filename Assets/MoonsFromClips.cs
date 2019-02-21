@@ -13,7 +13,7 @@ public class MoonsFromClips : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 
-    Moons = new Transform[clips.Length];
+  /*  Moons = new Transform[clips.Length];
 
     for( int i = 0; i < clips.Length; i ++ ){
 
@@ -25,7 +25,7 @@ public class MoonsFromClips : MonoBehaviour {
       moon.GetComponent<AudioSource>().Play();
       Moons[i] = moon.transform;
 
-    }
+    }*/
 		
 	}
 

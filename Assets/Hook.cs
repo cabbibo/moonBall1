@@ -5,6 +5,10 @@ using Rewired;
 
 public class Hook : MonoBehaviour {
 
+  public Terrain terrain;
+
+  public float lockHeight;
+  
   public float angle;
   public float angleUp;
   public float angleMultiplier;
@@ -27,7 +31,7 @@ public class Hook : MonoBehaviour {
 
   public bool lockDown = false;
 
-private bool canThrow = true;
+  private bool canThrow = true;
   public Vector3 lockPos;
   public Vector3 aimPos;
   //public Vector3 aimPos;
@@ -42,11 +46,11 @@ public Vector3 baseLockPos;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	/*void Update () {
 		UpdatePointer();
-	}
+	}*/
 
-  void FixedUpdate(){
+  void Update(){
 
     UpdatePointer();
     if( player.GetAxis("[]") == 0 ){
@@ -105,7 +109,7 @@ public Vector3 baseLockPos;
 
   void UpdatePointer(){
 
-    print(player.GetAxis("JoystickLeftX") );
+//    print(player.GetAxis("JoystickLeftX") );
    
     aimAngle =  player.GetAxis("JoystickLeftX") * Mathf.PI * angleMultiplier;
     aimAngleUp =  player.GetAxis("JoystickLeftY") * Mathf.PI * angleUpMultiplier;
@@ -114,7 +118,7 @@ public Vector3 baseLockPos;
     aimPos =  posFromAngles( aimAngle , aimAngleUp ); //transform.position - dir;
 
     aimer.transform.position = aimPos;
-    pointer.transform.position =  posFromAngles( angle , angleUp );  
+    pointer.transform.position =  posFromAngles( angle , 0 );  
    }
 
     void ThrowLock(){
@@ -122,9 +126,17 @@ public Vector3 baseLockPos;
       lockDown = true;
       angle = aimAngle;
       angleUp = aimAngleUp;
-      pointer.transform.position  =  posFromAngles( angle , angleUp ); 
+
+      float x = player.GetAxis("JoystickLeftX");
+      float y = player.GetAxis("JoystickLeftY");
+      pointer.transform.position  =  posFromAngles( angle , 0 ); 
+      Vector3 samplePos = (pointer.transform.position - transform.position ) *distanceMultiplier  * (2 - y *4) + transform.position;// + transform.forward *100;
+      float h = terrain.SampleHeight( samplePos );
+
+
+
       baseLockPos = (pointer.transform.position - transform.position );
-      lockPos = (pointer.transform.position - transform.position ) * distanceMultiplier + transform.position;
+      lockPos = new Vector3( samplePos.x , h + lockHeight , samplePos.z );////(pointer.transform.position - transform.position ) * distanceMultiplier + transform.position;
 
     }
 

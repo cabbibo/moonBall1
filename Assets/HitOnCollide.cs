@@ -24,6 +24,7 @@ public class HitOnCollide : MonoBehaviour {
 
   void OnCollisionEnter(){
 
+
     int step = clipSteps[Random.Range(0,clipSteps.Length)];
     AudioPlayer.Instance.Play( clip , step , volume , transform.position, falloff );
 

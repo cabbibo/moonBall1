@@ -17,7 +17,7 @@ public class PitchSquisher : MonoBehaviour {
   public float powPitch = 1;
 
   public void Squish(float val){
-      targetVolume = volMultiplier *val;
+      targetVolume = Mathf.Clamp( Mathf.Abs( volMultiplier * val ) +  .00001f  , .01f , 10 );
       targetPitch = Mathf.Pow( pitchMultiplier  , powPitch ) * val + pitchBase;
   }
 

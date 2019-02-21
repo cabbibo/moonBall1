@@ -30,6 +30,7 @@ if( c.gameObject.tag == "Ship"){
    // player.
 
     player.dragMultiplier = 0;
+    player.DropAll();
   }
 
   }

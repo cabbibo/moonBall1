@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PushMoon : MonoBehaviour {
 
@@ -16,11 +17,14 @@ public class PushMoon : MonoBehaviour {
   public PitchSquisher[] pitchSquishers;
 
   private FollowOnceHit  follow;
+  public UnityEvent onStart;
 
-private bool started = false;
+
+  private bool started;
 
 	// Use this for initialization
 	void Start () {
+    started = false;
 
     if( audio == null ){ audio = GetComponent<AudioSource>(); }
     follow = GetComponent<FollowOnceHit>();
@@ -36,25 +40,29 @@ private bool started = false;
       float val = 1- (distFromCenter*3);
 
 
-      player.boostAmount += .1f * val;
+      // Here is where we add the boost value!
+      player.boostAmount += .4f * val;
 
 //      print(distFromCenter);
       Inner.localScale = distFromCenter * Vector3.one * 3;
 
-      if( val > pushCutoff ){
+  if( val > pushCutoff ){
 
         player.numMoons += 1;
-        follow.StartHit(insideObject);
+        if( follow != null ){
+        follow.StartHit(insideObject);}
+        onStart.Invoke();  
         started = true;
         for( int i = 0 ;  i< pitchSquishers.Length; i++ ){
-  
-        pitchSquishers[i].UnSquish();;
-      }
+          pitchSquishers[i].UnSquish();;
+        }
 
 
       }
 		
       if( started == false ){
+
+    
       for( int i = 0 ;  i< pitchSquishers.Length; i++ ){
         pitchSquishers[i].Squish( val );
       }}

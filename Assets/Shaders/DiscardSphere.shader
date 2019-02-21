@@ -14,6 +14,7 @@
 
     _PatternSize( "Pattern Size", Float ) = 10
     _HueSize( "Hue Size", Float ) = .3
+    _BaseHue( "_BaseHue", Float ) = .3
     _CutoffVal( "Cutoff", Float ) = -1
 
 
@@ -43,6 +44,7 @@
       uniform float _TotalDepth;
       uniform float _PatternSize;
       uniform float _HueSize;
+      uniform float _BaseHue;
       uniform float _CutoffVal;
       uniform sampler2D _MainTex;
       uniform sampler2D _AudioMap;
@@ -214,7 +216,7 @@
             float delta = clamp((val2 - val) / (.5*offset),0,1);
             hit = 1;
             depthVal = delta * .2;//  v*10 - val*2 +100* float( i %2);// val;
- 						traceCol  += .4*hsv(val* _HueSize+_Time.y*.2,1,1);
+ 						traceCol  += .4*hsv(val* _HueSize+_BaseHue,1,1);
 
             //col +=hsv( clamp((val+.2) * 1,0,1) * _HueSize + _Time.y * .2 + v * .2, val, 1-val) * ( 1 - float(i)/_NumberSteps);
           //break;

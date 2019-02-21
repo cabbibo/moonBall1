@@ -23,6 +23,7 @@ public GO player;
   void OnTriggerExit(Collider c){
 
     if( c.gameObject.tag == "Ship"){
+      print("MADDDEEITITITI");
       Physics.gravity = Vector3.zero;
       player.dragMultiplier = 0;
     }

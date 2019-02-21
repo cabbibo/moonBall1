@@ -14,7 +14,7 @@ public class connectWithLine : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
     lr.SetPosition( 0 , transform.position );
     if( connected != null ){
        lr.SetPosition( 1 ,connected.position );

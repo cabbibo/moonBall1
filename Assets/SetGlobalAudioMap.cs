@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class SetGlobalAudioMap : MonoBehaviour {
 
-  AudioListenerTexture audio;
+  AudioListenerTexture audioT;
 	// Use this for initialization
 	void Start () {
-		audio = GetComponent<AudioListenerTexture>();
+		audioT = GetComponent<AudioListenerTexture>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-    Shader.SetGlobalTexture("_AudioMap",audio.AudioTexture);
+    Shader.SetGlobalTexture("_AudioMap",audioT.AudioTexture);
 		
 	}
 }

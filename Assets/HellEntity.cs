@@ -7,11 +7,12 @@ public class HellEntity : MonoBehaviour {
   public GameObject HellPlane;
   //public GameObject 
   public AudioClip clip;
+  public PitchSquisher squisher;
   public AudioClip followClip;
 
   private Rigidbody rb;
 
-  public GO player;
+  public Transform player;
   public bool following = false;
 	// Use this for initialization
 	void Start () {
@@ -26,7 +27,13 @@ public class HellEntity : MonoBehaviour {
 
     if( following == true ){
 //      print( "force" );
-      rb.AddForce( (player.transform.position - transform.position) * .3f );
+
+      Vector3 d = (player.position - transform.position);
+      rb.AddForce( d * .3f );
+      squisher.Squish( d.magnitude );
+    }else{
+
+      squisher.Squish( 0 );
     }
 		
 
@@ -40,12 +47,13 @@ public class HellEntity : MonoBehaviour {
 
     if( c.collider.gameObject.tag == "Ship" && following == false){
       following = true;
-     GetComponent<connectWithLine>().connected = player.gameObject.transform;
+      player = c.transform;
+     GetComponent<connectWithLine>().connected = player;
      GetComponent<TrailRenderer>().startWidth *= .04f;//connected = player.gameObject.transform;
      //GetComponent<TrailRenderer>().endWidth *= .04f;//connected = player.gameObject.transform;
       AudioPlayer.Instance.Play( followClip , 3 );
-      rb.drag = 1;
-      rb.mass = .1f;
+      rb.drag =  Random.Range( .2f , 1.9f );;
+      rb.mass =  Random.Range( .05f , .1f );
       transform.localScale *= .04f;
     }
   }

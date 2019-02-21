@@ -14,6 +14,7 @@ public Material onceFollowMaterial;
 
 public float id; 
 public float[] steps;//[0,2,3,5]
+public bool upPitch;
 
 
 private Rigidbody rb;
@@ -31,6 +32,10 @@ private int ID;
     rb = GetComponent<Rigidbody>();
     lr = GetComponent<LineRenderer>();
 		tr = GetComponent<TrailRenderer>();
+
+    if( upPitch == false ){
+      aud.volume = 0;
+    }
   // sj = GetComponent<SpringJoint>();
 	}
 	
@@ -89,6 +94,11 @@ lr.startColor =  Color.HSVToRGB((((float)ID+1)/10) %1,.8f,1);
 		
 	}
 
+  public void End(){
+    target = null;
+    aud.volume = 0;
+        a.Play(clip,.6f,10);
+  }
 
   public void StartHit(Transform c){
 
@@ -106,8 +116,14 @@ lr.startColor =  Color.HSVToRGB((((float)ID+1)/10) %1,.8f,1);
 
     a.Play(clip,.6f,10);
 
-    aud.pitch =  Mathf.Pow( 1.05946f,steps[Random.Range(0,steps.Length)]);//Elements[Random.Range(0,Elements.Length)];
+    if( upPitch == true ){
+      aud.pitch =  Mathf.Pow( 1.05946f,steps[Random.Range(0,steps.Length)]);//Elements[Random.Range(0,Elements.Length)];
+    
     aud.Play();
+    }else{
+      aud.pitch = 1;
+      aud.volume = 1;
+    }
   /*
   rb.drag = Random.Range(1,3.99f);
   rb.mass = Random.Range(1,3.99f);
@@ -122,6 +138,7 @@ lr.startColor =  Color.HSVToRGB((((float)ID+1)/10) %1,.8f,1);
      GetComponent<SphereCollider>().enabled = false;
     player.currentTailTip = transform;
      player.tailsConnected += 1;
+     player.tails.Add( this.gameObject );
 
    }
 
